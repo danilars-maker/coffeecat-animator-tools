@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ferramentas para animadores · Coffee Cat Studio</title>
-<meta name="description" content="Ferramentas gratuitas da Coffee Cat Studio para animadores: calculadora de frames e pagamento e folha de exposição com áudio.">
+<meta name="description" content="Ferramentas gratuitas da Coffee Cat Studio para animadores: calculadora de frames e pagamento, folha de exposição com áudio e gerador de orçamento em PDF.">
 <link rel="canonical" href="https://coffeecat.com.br/ferramentas/">
 <link rel="icon" href="calculadora/icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system
 h1,h2{font-family:Fredoka,Nunito,sans-serif;font-weight:600;line-height:1.05;margin:0;text-wrap:balance}
 h1{font-size:clamp(32px,5vw,50px)}
 .lede{color:var(--soft);font-size:17px;max-width:62ch;margin:10px 0 28px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .card{background:var(--card);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:10px;border:2px solid transparent;text-decoration:none;color:inherit}
 a.card:hover{border-color:var(--blue)}
 .card svg{width:48px;height:48px}
@@ -40,7 +40,7 @@ a.card:hover{border-color:var(--blue)}
 .bmc p{margin:0;color:var(--soft);max-width:56ch}
 .bmc a{display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border-radius:14px;background:#ffdd00;color:#2b3440;font-weight:800;text-decoration:none}
 footer{margin-top:22px;color:var(--soft);font-size:14px}footer a{color:var(--blue)}
-@media(max-width:640px){.grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -61,6 +61,9 @@ footer{margin-top:22px;color:var(--soft);font-size:14px}footer a{color:var(--blu
     <a class="card" id="c2" href="folha-de-exposicao/">
       <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="5" width="30" height="38" rx="3" fill="#fff" stroke="#2b3440" stroke-width="3"/><path d="M9 13h30M19 5v38M29 5v38" stroke="#2b3440" stroke-width="2"/><path d="M9 19h30M9 25h30M9 31h30M9 37h30" stroke="#2b3440" stroke-width="1.4"/><path d="M11 22c1.5-3 3-3 4.5 0s3 3 2.5-1" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"/></svg>
       <h2 data-t="t2"></h2><p data-t="d2"></p><span class="go" data-t="use"></span></a>
+    <a class="card" id="c3" href="gerador-de-orcamento/">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M11 5h19l8 8v30H11z" fill="#fff" stroke="#2b3440" stroke-width="3" stroke-linejoin="round"/><path d="M30 5v8h8" fill="none" stroke="#2b3440" stroke-width="3" stroke-linejoin="round"/><path d="M16 21h16M16 27h16M16 33h9" stroke="#2b3440" stroke-width="3" stroke-linecap="round"/><circle cx="33" cy="36" r="6" fill="#2563eb"/></svg>
+      <h2 data-t="t3"></h2><p data-t="d3"></p><span class="go" data-t="use"></span></a>
   </div>
   <div class="soon"><b data-t="soonT"></b><ul id="soon"></ul></div>
   <div class="bmc"><p data-t="bmcP"></p><a href="https://buymeacoffee.com/studiocoffeecat" target="_blank" rel="noopener" data-t="bmc"></a></div>
@@ -69,9 +72,9 @@ footer{margin-top:22px;color:var(--soft);font-size:14px}footer a{color:var(--blu
 <script>
 {
 const T={
-pt:{h1:'Ferramentas para animadores',lede:'Ferramentas gratuitas da Coffee Cat Studio, feitas por animadores, para tirar as contas e a burocracia do caminho.',t1:'Calculadora do animador',d1:'Quantos frames e desenhos você vai animar e quanto vai receber, por segundo ou por diária.',t2:'Folha de exposição',d2:'Suba o áudio, veja a onda frame a frame, anote sílabas, bocas e ações e baixe a folha em PNG para o Photoshop.',use:'Usar agora',soonT:'Em breve',soon:['Pegbar by Coffee Cat, plugin de animação para Photoshop','Gerador de orçamento','Grade de campo e área de segurança','Gerador de timing chart'],bmcP:'Todas as ferramentas são gratuitas. Se alguma te ajudou, um cafezinho ajuda a criar as próximas.',bmc:'Pague um café',foot:'Feito pela Coffee Cat Studio, para animadores.'},
-en:{h1:'Tools for animators',lede:'Free tools by Coffee Cat Studio, made by animators, to take the math and the paperwork out of the way.',t1:'Animator’s calculator',d1:'How many frames and drawings you’ll animate and how much you’ll get paid, per second or per day rate.',t2:'Exposure sheet',d2:'Upload the audio, see the waveform frame by frame, write syllables, mouth shapes and actions, and download the sheet as a PNG for Photoshop.',use:'Use it now',soonT:'Coming soon',soon:['Pegbar by Coffee Cat, an animation plugin for Photoshop','Quote generator','Field guide and safe areas','Timing chart generator'],bmcP:'All tools are free. If one helped you, a coffee helps make the next ones.',bmc:'Buy me a coffee',foot:'Made by Coffee Cat Studio, for animators.'},
-es:{h1:'Herramientas para animadores',lede:'Herramientas gratuitas de Coffee Cat Studio, hechas por animadores, para quitar las cuentas y el papeleo del camino.',t1:'Calculadora del animador',d1:'Cuántos fotogramas y dibujos vas a animar y cuánto vas a cobrar, por segundo o por jornada.',t2:'Hoja de exposición',d2:'Sube el audio, mira la onda fotograma a fotograma, anota sílabas, bocas y acciones y descarga la hoja en PNG para Photoshop.',use:'Usar ahora',soonT:'Próximamente',soon:['Pegbar by Coffee Cat, plugin de animación para Photoshop','Generador de presupuestos','Guía de campo y áreas seguras','Generador de timing chart'],bmcP:'Todas las herramientas son gratuitas. Si alguna te ayudó, un café ayuda a crear las próximas.',bmc:'Invítame un café',foot:'Hecho por Coffee Cat Studio, para animadores.'}};
+pt:{h1:'Ferramentas para animadores',lede:'Ferramentas gratuitas da Coffee Cat Studio, feitas por animadores, para tirar as contas e a burocracia do caminho.',t1:'Calculadora do animador',d1:'Quantos frames e desenhos você vai animar e quanto vai receber, por segundo ou por diária.',t3:'Gerador de orçamento',d3:'Preencha o projeto, o valor e as condições e baixe uma proposta em PDF pronta para mandar ao estúdio.',t2:'Folha de exposição',d2:'Suba o áudio, veja a onda frame a frame, anote sílabas, bocas e ações e baixe a folha em PNG para o Photoshop.',use:'Usar agora',soonT:'Em breve',soon:['Pegbar by Coffee Cat, plugin de animação para Photoshop','Grade de campo e área de segurança','Gerador de timing chart'],bmcP:'Todas as ferramentas são gratuitas. Se alguma te ajudou, um cafezinho ajuda a criar as próximas.',bmc:'Pague um café',foot:'Feito pela Coffee Cat Studio, para animadores.'},
+en:{h1:'Tools for animators',lede:'Free tools by Coffee Cat Studio, made by animators, to take the math and the paperwork out of the way.',t1:'Animator’s calculator',d1:'How many frames and drawings you’ll animate and how much you’ll get paid, per second or per day rate.',t3:'Quote generator',d3:'Fill in the project, your rate and terms, and download a PDF quote ready to send to the studio.',t2:'Exposure sheet',d2:'Upload the audio, see the waveform frame by frame, write syllables, mouth shapes and actions, and download the sheet as a PNG for Photoshop.',use:'Use it now',soonT:'Coming soon',soon:['Pegbar by Coffee Cat, an animation plugin for Photoshop','Field guide and safe areas','Timing chart generator'],bmcP:'All tools are free. If one helped you, a coffee helps make the next ones.',bmc:'Buy me a coffee',foot:'Made by Coffee Cat Studio, for animators.'},
+es:{h1:'Herramientas para animadores',lede:'Herramientas gratuitas de Coffee Cat Studio, hechas por animadores, para quitar las cuentas y el papeleo del camino.',t1:'Calculadora del animador',d1:'Cuántos fotogramas y dibujos vas a animar y cuánto vas a cobrar, por segundo o por jornada.',t3:'Generador de presupuestos',d3:'Completa el proyecto, la tarifa y las condiciones y descarga un presupuesto en PDF listo para el estudio.',t2:'Hoja de exposición',d2:'Sube el audio, mira la onda fotograma a fotograma, anota sílabas, bocas y acciones y descarga la hoja en PNG para Photoshop.',use:'Usar ahora',soonT:'Próximamente',soon:['Pegbar by Coffee Cat, plugin de animación para Photoshop','Guía de campo y áreas seguras','Generador de timing chart'],bmcP:'Todas las herramientas son gratuitas. Si alguna te ayudó, un café ayuda a crear las próximas.',bmc:'Invítame un café',foot:'Hecho por Coffee Cat Studio, para animadores.'}};
 let lang=(location.hash||'').slice(1);
 if(!T[lang]){try{lang=localStorage.getItem('cc-tools-lang')}catch(e){}}
 if(!T[lang]){const n=(navigator.language||'pt').slice(0,2);lang=T[n]?n:'pt'}
@@ -80,7 +83,7 @@ function render(){
   document.querySelectorAll('[data-t]').forEach(e=>{if(typeof l[e.dataset.t]==='string')e.textContent=l[e.dataset.t]});
   document.getElementById('soon').innerHTML='';l.soon.forEach(s=>{const li=document.createElement('li');li.textContent=s;document.getElementById('soon').append(li)});
   document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===lang));
-  document.getElementById('c1').href='calculadora/#'+lang;document.getElementById('c2').href='folha-de-exposicao/#'+lang;
+  document.getElementById('c1').href='calculadora/#'+lang;document.getElementById('c2').href='folha-de-exposicao/#'+lang;document.getElementById('c3').href='gerador-de-orcamento/#'+lang;
   try{localStorage.setItem('cc-tools-lang',lang)}catch(e){}
 }
 document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{lang=b.dataset.lang;render()}));

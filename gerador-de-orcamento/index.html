@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gerador de orçamento · Coffee Cat Studio</title>
+<meta name="description" content="Gerador de orçamento gratuito para animadores: preencha o projeto, o valor por segundo ou por diária e as condições, e baixe uma proposta em PDF pronta para mandar ao estúdio.">
+<link rel="canonical" href="https://coffeecat.com.br/ferramentas/gerador-de-orcamento/">
+<meta property="og:title" content="Gerador de orçamento · Coffee Cat Studio">
+<meta property="og:image" content="https://coffeecat.com.br/assets/compartilhar.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm, trustworthy paperwork helper for animators who dislike paperwork
+   IDEA: a printed quote on letter paper, filled in live beside the form
+   PICTURE: the A4 proposal itself, with its blue header rule and totals box
+   COLOUR and TYPE: light grey page, white paper, slate ink, animator's blue pencil; Fredoka + Nunito
+   LAYOUT: form in calm stacked sections left, sticky paper preview right; stacks on phones */
+:root{color-scheme:light dark;
+--bg:light-dark(#f3f5f8,#1a1f27);--ink:light-dark(#2b3440,#e8edf3);--soft:light-dark(#647083,#9aa6b8);
+--band:light-dark(#e4e9f0,#222833);--card:light-dark(#ffffff,#262d38);--line:light-dark(#d6dde7,#38424f);
+--blue:light-dark(#2563eb,#6ea0ff);--blueink:light-dark(#ffffff,#0c1730);--sel:light-dark(#dbe7ff,#24365e)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Nunito,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3vw,40px) max(4vw,14px)}
+.wrap{max-width:1320px;margin:0 auto}
+h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;font-weight:600;line-height:1.05;margin:0;text-wrap:balance}
+.top{background:var(--band)}
+.bar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--soft)}
+.brand svg{width:30px;height:30px;flex:none}
+.tright{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.home{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--card);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none}
+.home:hover{color:var(--blue)}
+.langs{display:flex;gap:4px;background:var(--card);border-radius:999px;padding:4px}
+.langs button{all:unset;cursor:pointer;padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;color:var(--soft)}
+.langs button[aria-pressed=true]{background:var(--blue);color:var(--blueink)}
+h1{font-size:clamp(30px,4.4vw,48px)}
+.lede{color:var(--soft);max-width:70ch;margin:8px 0 0;font-size:17px}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;background:var(--card);border:2px solid var(--line);font-weight:800;font-size:15px;white-space:nowrap}
+.btn:hover{border-color:var(--blue)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:var(--blueink)}
+.btn.warn{border-color:#e23a46;color:#e23a46}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px}
+.btn svg{width:18px;height:18px;flex:none}
+.import{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--card);border-radius:14px;padding:10px 14px}
+.import p{margin:0;font-size:14px;color:var(--soft);flex:1 1 260px}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.form{display:grid;gap:14px}
+.sec{background:var(--card);border-radius:18px;padding:16px 18px}
+.sec h2{font-size:20px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:13px;font-family:Nunito,sans-serif;font-weight:800}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.full{grid-column:1/-1}
+.f{display:flex;flex-direction:column;gap:4px}
+.f span{font-size:13px;font-weight:700;color:var(--soft)}
+.f input,.f textarea,.f select{font:inherit;font-size:16px;font-weight:700;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 10px;min-height:44px;width:100%}
+.f textarea{min-height:76px;resize:vertical;font-weight:600;line-height:1.4}
+.f input:focus,.f textarea:focus,.f select:focus{border-color:var(--blue);outline:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{all:unset;cursor:pointer;min-height:40px;padding:0 12px;display:inline-grid;place-items:center;border-radius:10px;background:var(--bg);font-weight:800;font-size:14px;border:2px solid transparent}
+.chip[aria-pressed=true]{background:var(--blue);color:var(--blueink)}
+.lbl{font-size:13px;font-weight:700;color:var(--soft);display:block;margin:4px 0 6px}
+.hint{color:var(--soft);font-size:13px;margin:6px 0 0}
+.tech{margin-top:10px;font-size:14px;background:var(--bg);border-radius:10px;padding:8px 12px;color:var(--soft)}
+.tech b{color:var(--ink)}
+.extra{display:grid;grid-template-columns:minmax(0,1fr) 8em 44px;gap:8px;align-items:end;margin-bottom:8px}
+.del{all:unset;cursor:pointer;width:44px;height:44px;display:grid;place-items:center;border-radius:10px;color:var(--soft);font-size:22px;font-weight:800}
+.del:hover{color:#e23a46;background:var(--bg)}
+.side{position:sticky;top:12px;display:grid;gap:12px}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.paperbox{background:var(--band);border-radius:18px;padding:clamp(10px,2vw,22px)}
+.paper{background:#fff;color:#1f2733;aspect-ratio:210/297;width:100%;border-radius:4px;box-shadow:0 10px 30px rgba(20,30,50,.18);padding:6.5% 7.5%;font-family:Nunito,Arial,sans-serif;font-size:clamp(8px,1.05vw,12.5px);line-height:1.38;overflow:hidden;display:flex;flex-direction:column}
+.paper .ph{display:flex;justify-content:space-between;align-items:flex-start;gap:1em;border-bottom:.25em solid #2563eb;padding-bottom:.8em;margin-bottom:1em}
+.paper .pt{font-family:Fredoka,Nunito,sans-serif;font-weight:600;font-size:2.1em;line-height:1}
+.paper .pn{text-align:right;color:#647083;font-size:.95em}
+.paper .pn b{color:#1f2733}
+.paper .who{display:grid;grid-template-columns:1fr 1fr;gap:1.4em;margin-bottom:1em}
+.paper .k{font-size:.78em;font-weight:800;letter-spacing:.06em;color:#647083;text-transform:uppercase;margin-bottom:.2em}
+.paper .who p{margin:0}
+.paper h4{font-size:1.02em;margin:.9em 0 .35em;font-weight:800;color:#2563eb}
+.paper .desc{white-space:pre-wrap;margin:0}
+.paper table{width:100%;border-collapse:collapse;margin-top:.2em}
+.paper td,.paper th{padding:.38em .4em;border-bottom:1px solid #d6dde7;text-align:left;vertical-align:top}
+.paper th{font-size:.8em;color:#647083;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.paper td.r,.paper th.r{text-align:right;white-space:nowrap}
+.paper .tot td{border-bottom:0;font-weight:800}
+.paper .grand td{background:#2563eb;color:#fff;font-size:1.15em}
+.paper ul{margin:0;padding-left:1.2em}
+.paper .sign{margin-top:auto;padding-top:1.4em;display:grid;grid-template-columns:1fr 1fr;gap:2em}
+.paper .sign div{border-top:1px solid #1f2733;padding-top:.3em;font-size:.9em;color:#647083}
+.paper .foot{font-size:.75em;color:#9aa6b8;margin-top:.8em}
+.msg{font-size:14px;color:var(--soft);margin:0}
+footer{color:var(--soft);font-size:14px}
+.bmcbox{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;background:var(--card);border-radius:18px;padding:18px 20px}
+.bmcbox p{margin:0;max-width:60ch}.bmcbox b{color:var(--ink);font-size:17px}
+.bmc{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px;border-radius:14px;background:#ffdd00;color:#2b3440;font-weight:800;text-decoration:none}
+footer a{color:var(--blue)}
+.credit{margin-top:14px}
+@media(max-width:980px){.main{grid-template-columns:minmax(0,1fr)}.side{position:static}}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}.paper{font-size:2.2vw}.extra{grid-template-columns:minmax(0,1fr) 6.5em 44px}}
+@media(max-width:420px){.home span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+</style>
+</head>
+<body>
+<header class="band top"><div class="wrap">
+  <div class="bar">
+    <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 16h20v10a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8z" fill="#2563eb"/><path d="M28 18h3a4 4 0 0 1 0 8h-3" fill="none" stroke="#2563eb" stroke-width="3"/><path d="M11 16l2-6 4 5M25 16l-2-6-4 5" fill="#2563eb"/><circle cx="15" cy="23" r="1.6" fill="#fff"/><circle cx="21" cy="23" r="1.6" fill="#fff"/></svg><span>Coffee Cat Studio · <span data-t="brand"></span></span></div>
+    <div class="tright">
+      <a class="home" href="https://coffeecat.com.br/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10v9.5h5v-5h3v5h5V10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg><span>Coffee Cat</span></a>
+      <div class="langs" role="group" aria-label="Idioma"><button data-lang="pt">PT</button><button data-lang="en">EN</button><button data-lang="es">ES</button></div>
+    </div>
+  </div>
+  <h1 data-t="title"></h1>
+  <p class="lede" data-t="lede"></p>
+  <div class="import" id="importBox" hidden><p data-t="importP"></p><button class="btn pri small" id="importBtn" data-t="importBtn"></button></div>
+</div></header>
+
+<main class="band"><div class="wrap main">
+  <div class="form">
+    <section class="sec"><h2><span class="num">1</span><span data-t="s1"></span></h2>
+      <div class="grid2">
+        <label class="f"><span data-t="meName"></span><input data-k="me.name" maxlength="80"></label>
+        <label class="f"><span data-t="meEmail"></span><input data-k="me.email" maxlength="80" inputmode="email"></label>
+        <label class="f"><span data-t="mePhone"></span><input data-k="me.phone" maxlength="40" inputmode="tel"></label>
+        <label class="f"><span data-t="meSite"></span><input data-k="me.site" maxlength="80"></label>
+        <label class="f full"><span data-t="meDoc"></span><input data-k="me.doc" maxlength="60"></label>
+      </div></section>
+
+    <section class="sec"><h2><span class="num">2</span><span data-t="s2"></span></h2>
+      <div class="grid2">
+        <label class="f"><span data-t="cliCompany"></span><input data-k="cli.company" maxlength="80"></label>
+        <label class="f"><span data-t="cliContact"></span><input data-k="cli.contact" maxlength="80"></label>
+        <label class="f full"><span data-t="cliEmail"></span><input data-k="cli.email" maxlength="80" inputmode="email"></label>
+      </div></section>
+
+    <section class="sec"><h2><span class="num">3</span><span data-t="s3"></span></h2>
+      <label class="f"><span data-t="projTitle"></span><input data-k="proj.title" maxlength="90"></label>
+      <span class="lbl" data-t="projType"></span><div class="chips" id="types"></div>
+      <label class="f" style="margin-top:10px"><span data-t="projDesc"></span><textarea data-k="proj.desc" maxlength="900"></textarea></label>
+      <div class="grid3" style="margin-top:10px">
+        <label class="f"><span data-t="min"></span><input data-k="tech.min" inputmode="numeric"></label>
+        <label class="f"><span data-t="sec"></span><input data-k="tech.sec" inputmode="decimal"></label>
+        <label class="f"><span data-t="expL"></span><select data-k="tech.exp" id="expSel"></select></label>
+      </div>
+      <span class="lbl" data-t="fpsL"></span><div class="chips" id="fps"></div>
+      <div class="tech" id="techLine"></div></section>
+
+    <section class="sec"><h2><span class="num">4</span><span data-t="s4"></span></h2>
+      <div class="chips" id="pay"></div>
+      <div class="grid3" style="margin-top:10px">
+        <label class="f" id="rateF"><span data-t="rateL"></span><input data-k="rate" inputmode="decimal"></label>
+        <label class="f" id="dailyF"><span data-t="dailyL"></span><input data-k="daily" inputmode="decimal"></label>
+        <label class="f" id="daysF"><span data-t="daysL"></span><input data-k="days" inputmode="numeric"></label>
+        <label class="f"><span data-t="curL"></span><select data-k="cur"><option value="BRL">R$ · BRL</option><option value="USD">US$ · USD</option><option value="EUR">€ · EUR</option></select></label>
+      </div>
+      <span class="lbl" style="margin-top:12px" data-t="extrasL"></span>
+      <div id="extras"></div>
+      <button class="btn small" id="addExtra">+ <span data-t="addExtra"></span></button>
+      <div class="grid3" style="margin-top:12px"><label class="f"><span data-t="discL"></span><input data-k="disc" inputmode="decimal" placeholder="0"></label></div>
+    </section>
+
+    <section class="sec"><h2><span class="num">5</span><span data-t="s5"></span></h2>
+      <div class="grid3">
+        <label class="f"><span data-t="numL"></span><input data-k="num" maxlength="20"></label>
+        <label class="f"><span data-t="dateL"></span><input data-k="date" type="date"></label>
+        <label class="f"><span data-t="validL"></span><input data-k="validity" inputmode="numeric"></label>
+        <label class="f"><span data-t="deadL"></span><input data-k="deadline" inputmode="numeric"></label>
+        <label class="f"><span data-t="revL"></span><input data-k="revisions" inputmode="numeric"></label>
+        <label class="f"><span data-t="payTL"></span><select data-k="payterms" id="payTerms"></select></label>
+        <label class="f full" id="payCustomF"><span data-t="payCustomL"></span><input data-k="payCustom" maxlength="140"></label>
+        <label class="f full"><span data-t="notesL"></span><textarea data-k="notes" maxlength="900"></textarea></label>
+      </div></section>
+  </div>
+
+  <aside class="side">
+    <div class="acts">
+      <button class="btn pri" id="pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12M6 10l6 6 6-6M4 20h16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="pdf"></span></button>
+      <button class="btn" id="copy" data-t="copy"></button>
+      <button class="btn warn" id="clear" data-t="clear"></button>
+    </div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <div class="paperbox"><div class="paper" id="paper" role="img"></div></div>
+    <p class="msg" data-t="autosave"></p>
+  </aside>
+</div></main>
+
+<footer class="band"><div class="wrap">
+  <div class="bmcbox"><p><b data-t="bmcTitle"></b><br><span data-t="bmcLede"></span></p>
+    <a class="bmc" href="https://buymeacoffee.com/studiocoffeecat" target="_blank" rel="noopener"><span data-t="bmc"></span></a></div>
+  <div class="credit"><span data-t="footer"></span> <a href="https://coffeecat.com.br">coffeecat.com.br</a></div>
+</div></footer>
+
+<script src="jspdf.umd.min.js"></script>
+<script>
+{
+const T={
+pt:{loc:'pt-BR',brand:'Ferramentas para animadores',title:'Gerador de orçamento',
+lede:'Preencha o projeto, o seu valor e as condições. A proposta se monta ao lado e sai em PDF, pronta para mandar ao estúdio.',
+importP:'Você usou a calculadora neste navegador. Quer trazer a duração, o fps e o valor de lá?',importBtn:'Trazer da calculadora',imported:'Valores da calculadora carregados.',
+s1:'Você',meName:'Seu nome ou estúdio',meEmail:'E-mail',mePhone:'Telefone / WhatsApp',meSite:'Site ou portfólio',meDoc:'CPF / CNPJ (opcional)',
+s2:'Cliente',cliCompany:'Estúdio ou empresa',cliContact:'Nome do contato',cliEmail:'E-mail do contato',
+s3:'Projeto',projTitle:'Nome do projeto',projType:'Tipo de animação',projDesc:'Descrição do trabalho',min:'Minutos',sec:'Segundos',expL:'Um desenho a cada',fpsL:'Frames por segundo',
+types:{stop:'Stop motion',trad:'Tradicional',tradi:'Tradigital',d3:'3D'},noun:{draw:'desenhos',pose:'poses'},
+exp:n=>n===1?'1 frame (em 1)':`${n} frames (em ${n})`,expShort:n=>`em ${n}`,
+techLine:(d,f,fr,u,n,e)=>`<b>${d}</b> a <b>${f} fps</b>, ${e}: <b>${fr}</b> frames e <b>${u}</b> ${n}.`,
+s4:'Valores',pay:['Por segundo','Por diária'],rateL:'Valor por segundo',dailyL:'Valor da diária',daysL:'Número de diárias',curL:'Moeda',
+extrasL:'Itens extras (opcional)',extraD:'Descrição',extraV:'Valor',addExtra:'Adicionar item',discL:'Desconto (%)',
+s5:'Condições',numL:'Nº da proposta',dateL:'Data',validL:'Validade (dias)',deadL:'Prazo de entrega (dias úteis)',revL:'Rodadas de revisão',payTL:'Pagamento',payCustomL:'Condição de pagamento',notesL:'Observações',
+payT:{'50':'50% na aprovação e 50% na entrega','100':'100% na entrega','30d':'Em até 30 dias após a entrega','3x':'Em 3 parcelas iguais','custom':'Outra condição…'},
+pdf:'Baixar PDF',copy:'Copiar texto',copied:'Texto copiado.',copyFail:'Não consegui copiar. Selecione o texto da proposta.',clear:'Limpar',clear2:'Clique de novo para limpar',
+pdfOk:'PDF gerado.',pdfFail:'Não consegui gerar o PDF aqui. Use “Copiar texto” ou tente pelo site coffeecat.com.br.',
+autosave:'Tudo fica salvo neste navegador. Nada é enviado para a internet.',
+P:{title:'Proposta de orçamento',num:'Nº',date:'Data',from:'De',to:'Para',project:'Projeto',scope:'Escopo',tech:'Especificação técnica',
+values:'Valores',item:'Item',qty:'Qtd.',unit:'Valor unit.',total:'Total',animSec:'Animação (segundos)',animDay:'Animação (diárias)',
+sub:'Subtotal',disc:p=>`Desconto (${p}%)`,grand:'Total',cond:'Condições',dead:d=>`Prazo de entrega: ${d} dias úteis a partir da aprovação.`,
+rev:r=>r==='0'?'Revisões não incluídas.':`Inclui ${r} ${r==='1'?'rodada':'rodadas'} de revisão.`,payLbl:'Pagamento: ',valid:v=>`Esta proposta é válida por ${v} dias.`,
+notes:'Observações',signMe:'Assinatura do animador(a)',signCli:'Aprovação do cliente',foot:'Proposta feita com o Gerador de orçamento da Coffee Cat Studio · coffeecat.com.br/ferramentas',
+sec:'s',dur:'Duração',drawings:'Desenhos',frames:'Frames',untitled:'Projeto sem nome'},
+bmcTitle:'O gerador de orçamento é gratuito.',bmcLede:'Se ele te ajudou a fechar um trabalho, um cafezinho ajuda a Coffee Cat a criar mais ferramentas.',bmc:'Pague um café',
+footer:'Feito pela Coffee Cat Studio, para animadores.',min_:'min',sec_:'seg'},
+en:{loc:'en-US',brand:'Tools for animators',title:'Quote generator',
+lede:'Fill in the project, your rate and the terms. The quote builds itself beside the form and downloads as a PDF, ready to send to the studio.',
+importP:'You used the calculator in this browser. Bring the length, fps and rate from there?',importBtn:'Bring from calculator',imported:'Calculator values loaded.',
+s1:'You',meName:'Your name or studio',meEmail:'Email',mePhone:'Phone / WhatsApp',meSite:'Website or portfolio',meDoc:'Tax ID (optional)',
+s2:'Client',cliCompany:'Studio or company',cliContact:'Contact name',cliEmail:'Contact email',
+s3:'Project',projTitle:'Project name',projType:'Animation type',projDesc:'Description of the work',min:'Minutes',sec:'Seconds',expL:'A drawing every',fpsL:'Frames per second',
+types:{stop:'Stop motion',trad:'Traditional',tradi:'Tradigital',d3:'3D'},noun:{draw:'drawings',pose:'poses'},
+exp:n=>n===1?'1 frame (on ones)':`${n} frames (on ${['','ones','twos','threes'][n]||n+'s'})`,expShort:n=>'on '+(['','ones','twos','threes'][n]||n+'s'),
+techLine:(d,f,fr,u,n,e)=>`<b>${d}</b> at <b>${f} fps</b>, ${e}: <b>${fr}</b> frames and <b>${u}</b> ${n}.`,
+s4:'Pricing',pay:['Per second','Per day rate'],rateL:'Rate per second',dailyL:'Day rate',daysL:'Number of days',curL:'Currency',
+extrasL:'Extra items (optional)',extraD:'Description',extraV:'Amount',addExtra:'Add item',discL:'Discount (%)',
+s5:'Terms',numL:'Quote no.',dateL:'Date',validL:'Valid for (days)',deadL:'Delivery (working days)',revL:'Revision rounds',payTL:'Payment',payCustomL:'Payment terms',notesL:'Notes',
+payT:{'50':'50% on approval, 50% on delivery','100':'100% on delivery','30d':'Within 30 days of delivery','3x':'In 3 equal instalments','custom':'Other terms…'},
+pdf:'Download PDF',copy:'Copy text',copied:'Text copied.',copyFail:'I couldn’t copy. Select the quote text instead.',clear:'Clear',clear2:'Click again to clear',
+pdfOk:'PDF created.',pdfFail:'I couldn’t create the PDF here. Use “Copy text” or try it on coffeecat.com.br.',
+autosave:'Everything is saved in this browser. Nothing is uploaded.',
+P:{title:'Quote',num:'No.',date:'Date',from:'From',to:'To',project:'Project',scope:'Scope',tech:'Technical specs',
+values:'Pricing',item:'Item',qty:'Qty',unit:'Unit price',total:'Total',animSec:'Animation (seconds)',animDay:'Animation (days)',
+sub:'Subtotal',disc:p=>`Discount (${p}%)`,grand:'Total',cond:'Terms',dead:d=>`Delivery: ${d} working days from approval.`,
+rev:r=>r==='0'?'Revisions not included.':`Includes ${r} revision ${r==='1'?'round':'rounds'}.`,payLbl:'Payment: ',valid:v=>`This quote is valid for ${v} days.`,
+notes:'Notes',signMe:'Animator’s signature',signCli:'Client approval',foot:'Quote made with the Coffee Cat Studio quote generator · coffeecat.com.br/tools',
+sec:'s',dur:'Length',drawings:'Drawings',frames:'Frames',untitled:'Untitled project'},
+bmcTitle:'This quote generator is free.',bmcLede:'If it helped you land a job, a coffee helps Coffee Cat make more tools.',bmc:'Buy me a coffee',
+footer:'Made by Coffee Cat Studio, for animators.',min_:'min',sec_:'sec'},
+es:{loc:'es-ES',brand:'Herramientas para animadores',title:'Generador de presupuestos',
+lede:'Completa el proyecto, tu tarifa y las condiciones. El presupuesto se arma al lado y sale en PDF, listo para enviar al estudio.',
+importP:'Usaste la calculadora en este navegador. ¿Traer la duración, los fps y la tarifa de allí?',importBtn:'Traer de la calculadora',imported:'Valores de la calculadora cargados.',
+s1:'Tú',meName:'Tu nombre o estudio',meEmail:'Correo',mePhone:'Teléfono / WhatsApp',meSite:'Web o portafolio',meDoc:'NIF / identificación fiscal (opcional)',
+s2:'Cliente',cliCompany:'Estudio o empresa',cliContact:'Nombre del contacto',cliEmail:'Correo del contacto',
+s3:'Proyecto',projTitle:'Nombre del proyecto',projType:'Tipo de animación',projDesc:'Descripción del trabajo',min:'Minutos',sec:'Segundos',expL:'Un dibujo cada',fpsL:'Fotogramas por segundo',
+types:{stop:'Stop motion',trad:'Tradicional',tradi:'Tradigital',d3:'3D'},noun:{draw:'dibujos',pose:'poses'},
+exp:n=>n===1?'1 fotograma (en unos)':`${n} fotogramas (en ${['','unos','dos','tres'][n]||n})`,expShort:n=>'en '+(['','unos','dos','tres'][n]||n),
+techLine:(d,f,fr,u,n,e)=>`<b>${d}</b> a <b>${f} fps</b>, ${e}: <b>${fr}</b> fotogramas y <b>${u}</b> ${n}.`,
+s4:'Valores',pay:['Por segundo','Por jornada'],rateL:'Tarifa por segundo',dailyL:'Tarifa por jornada',daysL:'Número de jornadas',curL:'Moneda',
+extrasL:'Conceptos extra (opcional)',extraD:'Descripción',extraV:'Importe',addExtra:'Añadir concepto',discL:'Descuento (%)',
+s5:'Condiciones',numL:'Nº de presupuesto',dateL:'Fecha',validL:'Validez (días)',deadL:'Plazo de entrega (días hábiles)',revL:'Rondas de revisión',payTL:'Pago',payCustomL:'Condición de pago',notesL:'Observaciones',
+payT:{'50':'50% a la aprobación y 50% a la entrega','100':'100% a la entrega','30d':'Hasta 30 días después de la entrega','3x':'En 3 cuotas iguales','custom':'Otra condición…'},
+pdf:'Descargar PDF',copy:'Copiar texto',copied:'Texto copiado.',copyFail:'No pude copiar. Selecciona el texto del presupuesto.',clear:'Borrar',clear2:'Haz clic otra vez para borrar',
+pdfOk:'PDF creado.',pdfFail:'No pude crear el PDF aquí. Usa “Copiar texto” o pruébalo en coffeecat.com.br.',
+autosave:'Todo se guarda en este navegador. No se envía nada.',
+P:{title:'Presupuesto',num:'Nº',date:'Fecha',from:'De',to:'Para',project:'Proyecto',scope:'Alcance',tech:'Especificación técnica',
+values:'Valores',item:'Concepto',qty:'Cant.',unit:'Precio unit.',total:'Total',animSec:'Animación (segundos)',animDay:'Animación (jornadas)',
+sub:'Subtotal',disc:p=>`Descuento (${p}%)`,grand:'Total',cond:'Condiciones',dead:d=>`Plazo de entrega: ${d} días hábiles desde la aprobación.`,
+rev:r=>r==='0'?'Revisiones no incluidas.':`Incluye ${r} ${r==='1'?'ronda':'rondas'} de revisión.`,payLbl:'Pago: ',valid:v=>`Este presupuesto es válido por ${v} días.`,
+notes:'Observaciones',signMe:'Firma del animador(a)',signCli:'Aprobación del cliente',foot:'Presupuesto hecho con el generador de Coffee Cat Studio · coffeecat.com.br/herramientas',
+sec:'s',dur:'Duración',drawings:'Dibujos',frames:'Fotogramas',untitled:'Proyecto sin nombre'},
+bmcTitle:'El generador de presupuestos es gratuito.',bmcLede:'Si te ayudó a cerrar un trabajo, un café ayuda a Coffee Cat a crear más herramientas.',bmc:'Invítame un café',
+footer:'Hecho por Coffee Cat Studio, para animadores.',min_:'min',sec_:'seg'}};
+
+const TYPES=[{id:'stop',noun:'pose',exp:2},{id:'trad',noun:'draw',exp:2},{id:'tradi',noun:'draw',exp:2},{id:'d3',noun:'pose',exp:1}];
+const FPS=[8,12,24,30],LS='cc-orcamento';
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const blank=()=>({lang:null,cur:null,me:{name:'',email:'',phone:'',site:'',doc:''},cli:{company:'',contact:'',email:''},
+  proj:{title:'',type:'tradi',desc:''},tech:{min:'0',sec:'30',fps:24,exp:'2'},pay:'sec',rate:'300',daily:'500',days:'10',
+  extras:[],disc:'',num:new Date().getFullYear()+'-001',date:today(),validity:'15',deadline:'20',revisions:'2',payterms:'50',payCustom:'',notes:''});
+let S=blank();
+try{const v=JSON.parse(localStorage.getItem(LS)||'null');if(v&&v.me)S=Object.assign(blank(),v,{me:{...blank().me,...v.me},cli:{...blank().cli,...v.cli},proj:{...blank().proj,...v.proj},tech:{...blank().tech,...v.tech}})}catch(e){}
+{const hl=(location.hash||'').slice(1);if(T[hl])S.lang=hl}
+if(!S.lang){const n=(navigator.language||'pt').slice(0,2);S.lang=T[n]?n:'pt'}
+if(!S.cur)S.cur=S.lang==='pt'?'BRL':S.lang==='es'?'EUR':'USD';
+const L=()=>T[S.lang];
+let st=0;const save=()=>{clearTimeout(st);st=setTimeout(()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}},250)};
+const num=v=>{const x=parseFloat(String(v??'').replace(/\s/g,'').replace(',','.'));return isFinite(x)&&x>0?x:0};
+const nf=(x,d=0)=>new Intl.NumberFormat(L().loc,{maximumFractionDigits:d}).format(x);
+const money=x=>new Intl.NumberFormat(L().loc,{style:'currency',currency:S.cur}).format(x||0);
+const get=k=>k.split('.').reduce((o,p)=>o?.[p],S);
+const set=(k,v)=>{const p=k.split('.');let o=S;while(p.length>1)o=o[p.shift()];o[p[0]]=v};
+const dur=s=>{const l=L();if(s<60)return nf(s,2)+' '+l.sec_;const m=Math.floor(s/60),r=+(s-m*60).toFixed(2);return nf(m)+' '+l.min_+(r?' '+nf(r,2)+' '+l.sec_:'')};
+const fmtDate=d=>{if(!d)return'';const[y,m,dd]=d.split('-').map(Number);if(!y)return d;return new Intl.DateTimeFormat(L().loc,{dateStyle:'long'}).format(new Date(y,m-1,dd))};
+
+function calc(){
+  const secs=num(S.tech.min)*60+num(S.tech.sec),fps=S.tech.fps,exp=Math.max(1,Math.floor(num(S.tech.exp))||1);
+  const frames=Math.ceil(secs*fps-1e-9),units=Math.ceil(frames/exp-1e-9);
+  const ty=TYPES.find(t=>t.id===S.proj.type)||TYPES[2];
+  const items=[];
+  if(S.pay==='sec')items.push({d:L().P.animSec,q:nf(secs,2)+' '+L().P.sec,u:num(S.rate),t:secs*num(S.rate)});
+  else items.push({d:L().P.animDay,q:nf(num(S.days)),u:num(S.daily),t:num(S.days)*num(S.daily)});
+  S.extras.forEach(x=>{if(x.d||num(x.v))items.push({d:x.d||'—',q:'1',u:num(x.v),t:num(x.v)})});
+  const sub=items.reduce((a,b)=>a+b.t,0),dp=Math.min(100,num(S.disc)),disc=sub*dp/100;
+  return{secs,fps,exp,frames,units,noun:L().noun[ty.noun],items,sub,dp,disc,total:sub-disc};
+}
+const payText=()=>S.payterms==='custom'?S.payCustom:L().payT[S.payterms];
+
+function staticText(){
+  const l=L();document.documentElement.lang=l.loc;document.title=l.title+' · Coffee Cat Studio';
+  document.querySelectorAll('[data-t]').forEach(e=>{const v=l[e.dataset.t];if(typeof v==='string')e.textContent=v});
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===S.lang));
+  $('expSel').innerHTML=[1,2,3,4].map(n=>`<option value="${n}">${esc(l.exp(n))}</option>`).join('');
+  $('payTerms').innerHTML=Object.entries(l.payT).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('');
+  document.querySelectorAll('[data-k]').forEach(e=>{if(document.activeElement!==e)e.value=get(e.dataset.k)??''});
+  render();
+}
+function renderExtras(){
+  const l=L();
+  $('extras').innerHTML=S.extras.map((x,i)=>`<div class="extra"><label class="f"><span>${esc(l.extraD)}</span><input data-x="${i}" data-xf="d" value="${esc(x.d)}" maxlength="80"></label><label class="f"><span>${esc(l.extraV)}</span><input data-x="${i}" data-xf="v" value="${esc(x.v)}" inputmode="decimal"></label><button class="del" data-del="${i}" aria-label="×">×</button></div>`).join('');
+}
+function render(){
+  const l=L(),r=calc();
+  $('types').innerHTML=TYPES.map(t=>`<button class="chip" data-type="${t.id}" aria-pressed="${S.proj.type===t.id}">${esc(l.types[t.id])}</button>`).join('');
+  $('fps').innerHTML=FPS.map(f=>`<button class="chip" data-fps="${f}" aria-pressed="${S.tech.fps===f}">${f} fps</button>`).join('');
+  $('pay').innerHTML=['sec','day'].map((p,i)=>`<button class="chip" data-pay="${p}" aria-pressed="${S.pay===p}">${esc(l.pay[i])}</button>`).join('');
+  $('rateF').hidden=S.pay!=='sec';$('dailyF').hidden=$('daysF').hidden=S.pay!=='day';
+  $('payCustomF').hidden=S.payterms!=='custom';
+  $('techLine').innerHTML=l.techLine(esc(dur(r.secs)),r.fps,nf(r.frames),nf(r.units),esc(r.noun),esc(l.expShort(r.exp)));
+  if(!document.activeElement||!document.activeElement.dataset||document.activeElement.dataset.x===undefined)renderExtras();
+  renderPaper(r);save();
+}
+function renderPaper(r){
+  const l=L(),P=l.P,me=S.me,c=S.cli;
+  const lines=(a)=>a.filter(Boolean).map(esc).join('<br>');
+  const cond=[S.deadline&&P.dead(esc(S.deadline)),P.rev(String(Math.floor(num(S.revisions)))),payText()&&esc(P.payLbl+payText()),S.validity&&P.valid(esc(S.validity))].filter(Boolean);
+  $('paper').innerHTML=`
+  <div class="ph"><div><div class="pt">${esc(P.title)}</div><div style="margin-top:.4em;font-weight:800">${esc(S.proj.title||P.untitled)}</div></div>
+    <div class="pn">${esc(P.num)} <b>${esc(S.num)}</b><br>${esc(fmtDate(S.date))}</div></div>
+  <div class="who"><div><div class="k">${esc(P.from)}</div><p><b>${esc(me.name||'—')}</b><br>${lines([me.email,me.phone,me.site,me.doc])}</p></div>
+    <div><div class="k">${esc(P.to)}</div><p><b>${esc(c.company||'—')}</b><br>${lines([c.contact,c.email])}</p></div></div>
+  ${S.proj.desc?`<h4>${esc(P.scope)}</h4><p class="desc">${esc(S.proj.desc)}</p>`:''}
+  <h4>${esc(P.tech)}</h4>
+  <p style="margin:0">${esc(l.types[S.proj.type])} · ${esc(P.dur)}: <b>${esc(dur(r.secs))}</b> · ${r.fps} fps, ${esc(l.expShort(r.exp))} · ${esc(P.frames)}: <b>${nf(r.frames)}</b> · ${esc(r.noun.charAt(0).toUpperCase()+r.noun.slice(1))}: <b>${nf(r.units)}</b></p>
+  <h4>${esc(P.values)}</h4>
+  <table><thead><tr><th>${esc(P.item)}</th><th class="r">${esc(P.qty)}</th><th class="r">${esc(P.unit)}</th><th class="r">${esc(P.total)}</th></tr></thead><tbody>
+  ${r.items.map(i=>`<tr><td>${esc(i.d)}</td><td class="r">${esc(i.q)}</td><td class="r">${esc(money(i.u))}</td><td class="r">${esc(money(i.t))}</td></tr>`).join('')}
+  ${r.dp?`<tr class="tot"><td colspan="3" class="r">${esc(P.sub)}</td><td class="r">${esc(money(r.sub))}</td></tr><tr class="tot"><td colspan="3" class="r">${esc(P.disc(nf(r.dp,2)))}</td><td class="r">− ${esc(money(r.disc))}</td></tr>`:''}
+  <tr class="tot grand"><td colspan="3" class="r">${esc(P.grand)}</td><td class="r">${esc(money(r.total))}</td></tr></tbody></table>
+  <h4>${esc(P.cond)}</h4><ul>${cond.map(x=>`<li>${x}</li>`).join('')}</ul>
+  ${S.notes?`<h4>${esc(P.notes)}</h4><p class="desc">${esc(S.notes)}</p>`:''}
+  <div class="sign"><div>${esc(P.signMe)}</div><div>${esc(P.signCli)}</div></div>
+  <div class="foot">${esc(P.foot)}</div>`;
+  $('paper').setAttribute('aria-label',P.title+' '+S.num);
+}
+function plainText(){
+  const l=L(),P=l.P,r=calc(),me=S.me,c=S.cli,o=[];
+  o.push(`${P.title} ${P.num} ${S.num} · ${fmtDate(S.date)}`,`${S.proj.title||P.untitled}`,'');
+  o.push(`${P.from}: ${[me.name,me.email,me.phone,me.site,me.doc].filter(Boolean).join(' · ')}`);
+  o.push(`${P.to}: ${[c.company,c.contact,c.email].filter(Boolean).join(' · ')}`,'');
+  if(S.proj.desc)o.push(`${P.scope}:`,S.proj.desc,'');
+  o.push(`${P.tech}: ${l.types[S.proj.type]} · ${dur(r.secs)} · ${r.fps} fps, ${l.expShort(r.exp)} · ${nf(r.frames)} ${P.frames.toLowerCase()} · ${nf(r.units)} ${r.noun}`,'');
+  o.push(`${P.values}:`);r.items.forEach(i=>o.push(`- ${i.d}: ${i.q} × ${money(i.u)} = ${money(i.t)}`));
+  if(r.dp)o.push(`${P.sub}: ${money(r.sub)}`,`${P.disc(nf(r.dp,2))}: − ${money(r.disc)}`);
+  o.push(`${P.grand}: ${money(r.total)}`,'',`${P.cond}:`);
+  if(S.deadline)o.push('- '+P.dead(S.deadline));o.push('- '+P.rev(String(Math.floor(num(S.revisions)))));
+  if(payText())o.push('- '+P.payLbl+payText());if(S.validity)o.push('- '+P.valid(S.validity));
+  if(S.notes)o.push('',`${P.notes}:`,S.notes);
+  return o.join('\n');
+}
+/* PDF with jsPDF (standard fonts, Latin-1) */
+function buildPDF(){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const l=L(),P=l.P,r=calc(),me=S.me,c=S.cli,W=210,M=18,CW=W-M*2;let y=M;
+  const ink=[31,39,51],soft=[100,112,131],blue=[37,99,235],line=[214,221,231];
+  const color=a=>doc.setTextColor(...a),font=(s,w)=>{doc.setFont('helvetica',w||'normal');doc.setFontSize(s)};
+  const need=h=>{if(y+h>297-M-14){doc.addPage();y=M}};
+  const txt=(t,x,yy,o)=>doc.text(String(t),x,yy,o);
+  const wrap=(t,w)=>doc.splitTextToSize(String(t),w);
+  font(22,'bold');color(ink);txt(P.title,M,y+6);
+  font(10,'normal');color(soft);txt(`${P.num} ${S.num}`,W-M,y+2,{align:'right'});txt(fmtDate(S.date),W-M,y+7,{align:'right'});
+  y+=13;font(12,'bold');color(ink);wrap(S.proj.title||P.untitled,CW).forEach(s=>{txt(s,M,y);y+=5.5});
+  doc.setDrawColor(...blue);doc.setLineWidth(1.1);doc.line(M,y,W-M,y);y+=8;
+  const col=(x,head,name,rest)=>{let yy=y;font(7.5,'bold');color(soft);txt(head.toUpperCase(),x,yy);yy+=5;font(10.5,'bold');color(ink);
+    wrap(name||'—',CW/2-6).forEach(s=>{txt(s,x,yy);yy+=4.8});font(9.5,'normal');color(ink);rest.filter(Boolean).forEach(v=>wrap(v,CW/2-6).forEach(s=>{txt(s,x,yy);yy+=4.4}));return yy};
+  const y1=col(M,P.from,me.name,[me.email,me.phone,me.site,me.doc]),y2=col(M+CW/2+4,P.to,c.company,[c.contact,c.email]);y=Math.max(y1,y2)+4;
+  const h4=t=>{need(12);font(10.5,'bold');color(blue);txt(t,M,y);y+=5.5;font(9.5,'normal');color(ink)};
+  const para=t=>{wrap(t,CW).forEach(s=>{need(5);txt(s,M,y);y+=4.5});y+=1.5};
+  if(S.proj.desc){h4(P.scope);para(S.proj.desc)}
+  h4(P.tech);para(`${l.types[S.proj.type]} · ${P.dur}: ${dur(r.secs)} · ${r.fps} fps, ${l.expShort(r.exp)} · ${P.frames}: ${nf(r.frames)} · ${r.noun.charAt(0).toUpperCase()+r.noun.slice(1)}: ${nf(r.units)}`);
+  h4(P.values);
+  const cx=[M+1,M+CW*0.58,M+CW*0.78,W-M-1];
+  font(7.5,'bold');color(soft);txt(P.item.toUpperCase(),cx[0],y);txt(P.qty.toUpperCase(),cx[1],y,{align:'right'});txt(P.unit.toUpperCase(),cx[2],y,{align:'right'});txt(P.total.toUpperCase(),cx[3],y,{align:'right'});
+  y+=2;doc.setDrawColor(...line);doc.setLineWidth(.3);doc.line(M,y,W-M,y);y+=5;
+  r.items.forEach(i=>{const ds=wrap(i.d,CW*0.44);need(ds.length*4.4+4);font(9.5,'normal');color(ink);ds.forEach((s,k)=>txt(s,cx[0],y+k*4.4));
+    txt(i.q,cx[1],y,{align:'right'});txt(money(i.u),cx[2],y,{align:'right'});txt(money(i.t),cx[3],y,{align:'right'});y+=ds.length*4.4+1.6;doc.line(M,y,W-M,y);y+=4.6});
+  if(r.dp){font(9.5,'bold');txt(P.sub,cx[2],y,{align:'right'});txt(money(r.sub),cx[3],y,{align:'right'});y+=5;txt(P.disc(nf(r.dp,2)),cx[2],y,{align:'right'});txt('- '+money(r.disc),cx[3],y,{align:'right'});y+=4}
+  need(12);doc.setFillColor(...blue);doc.rect(M,y-1,CW,9,'F');font(11.5,'bold');doc.setTextColor(255,255,255);txt(P.grand,cx[2],y+5,{align:'right'});txt(money(r.total),cx[3],y+5,{align:'right'});y+=15;
+  h4(P.cond);
+  const cond=[S.deadline&&P.dead(S.deadline),P.rev(String(Math.floor(num(S.revisions)))),payText()&&P.payLbl+payText(),S.validity&&P.valid(S.validity)].filter(Boolean);
+  cond.forEach(t=>{wrap(t,CW-5).forEach((s,k)=>{need(5);if(!k)txt('•',M+1,y);txt(s,M+5,y);y+=4.5})});y+=1.5;
+  if(S.notes){h4(P.notes);para(S.notes)}
+  need(26);y=Math.max(y+12,297-M-26);doc.setDrawColor(...ink);doc.setLineWidth(.3);doc.line(M,y,M+CW/2-8,y);doc.line(M+CW/2+8,y,W-M,y);
+  font(8.5,'normal');color(soft);txt(P.signMe,M,y+4.5);txt(P.signCli,M+CW/2+8,y+4.5);
+  const pages=doc.getNumberOfPages();for(let p=1;p<=pages;p++){doc.setPage(p);font(7.5,'normal');doc.setTextColor(154,166,184);txt(P.foot,M,297-10);if(pages>1)txt(`${p}/${pages}`,W-M,297-10,{align:'right'})}
+  return doc;
+}
+const slug=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const msg=t=>{$('msg').textContent=t;clearTimeout(msg.t);msg.t=setTimeout(()=>$('msg').textContent='',4000)};
+window.ccBuildPDF=buildPDF;
+/* import from calculator (same site) */
+let calcData=null;try{calcData=JSON.parse(localStorage.getItem('cc-anim-calc')||'null')}catch(e){}
+if(calcData&&(calcData.sec||calcData.rate))$('importBox').hidden=false;
+/* events */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.lang){S.lang=d.lang;staticText()}
+  else if(d.type){S.proj.type=d.type;S.tech.exp=String(TYPES.find(t=>t.id===d.type).exp);staticText()}
+  else if(d.fps){S.tech.fps=+d.fps;render()}
+  else if(d.pay){S.pay=d.pay;render()}
+  else if(d.del!==undefined){S.extras.splice(+d.del,1);renderExtras();render()}
+  else if(b.id==='addExtra'){S.extras.push({d:'',v:''});renderExtras();render();const ins=$('extras').querySelectorAll('input[data-xf="d"]');if(ins.length)ins[ins.length-1].focus()}
+  else if(b.id==='importBtn'&&calcData){const c=calcData,map={stop:'stop',trad:'trad',tradi:'tradi','3d':'d3'};
+    if(map[c.type])S.proj.type=map[c.type];if(FPS.includes(+c.fps))S.tech.fps=+c.fps;if(c.exp)S.tech.exp=String(c.exp);
+    if(c.min!=null)S.tech.min=String(c.min);if(c.sec!=null)S.tech.sec=String(c.sec);if(c.rate)S.rate=String(c.rate);if(c.daily)S.daily=String(c.daily);
+    if(c.days)S.days=String(c.days);if(c.pay==='day'||c.pay==='sec')S.pay=c.pay;if(['BRL','USD','EUR'].includes(c.cur))S.cur=c.cur;
+    staticText();msg(L().imported)}
+  else if(b.id==='pdf'){try{if(!window.jspdf)throw 0;buildPDF().save(`${L().P.title.toLowerCase().replace(/\s+/g,'-')}_${slug(S.num)||'1'}${S.cli.company?'_'+slug(S.cli.company):''}.pdf`);msg(L().pdfOk)}catch(err){msg(L().pdfFail)}}
+  else if(b.id==='copy'){const t=plainText();try{navigator.clipboard.writeText(t).then(()=>msg(L().copied),()=>msg(L().copyFail))}catch(err){msg(L().copyFail)}}
+  else if(b.id==='clear'){if(b.dataset.arm){const lang=S.lang,me=S.me;S=blank();S.lang=lang;S.me=me;delete b.dataset.arm;staticText()}
+    else{b.dataset.arm=1;b.textContent=L().clear2;setTimeout(()=>{delete b.dataset.arm;b.textContent=L().clear},3000)}}
+});
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.dataset.k){set(t.dataset.k,t.dataset.k==='tech.fps'?+t.value:t.value);render()}
+  else if(t.dataset.x!==undefined){S.extras[+t.dataset.x][t.dataset.xf]=t.value;render()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.tagName==='SELECT'&&t.dataset.k){set(t.dataset.k,t.value);render()}});
+staticText();
+}
+</script>
+</body>
+</html>

@@ -190,7 +190,7 @@ footer a{color:var(--blue)}
       <div class="fig"><svg id="strip" role="img"></svg></div>
       <p class="cap" id="cap"></p>
     </div>
-    <div class="sum"><span id="sum"></span><br><button class="btn" id="copy" data-t="copy"></button></div>
+    <div class="sum"><span id="sum"></span><br><button class="btn" id="copy" data-t="copy"></button> <a class="btn" id="toQuote" href="../gerador-de-orcamento/index.html" style="background:var(--blue);color:var(--blueink);text-decoration:none" data-t="toQuote"></a></div>
     <p class="sample" data-t="sample"></p>
   </section>
 </div></main>
@@ -237,7 +237,7 @@ perDay:(t,u,n,m)=>`<b>Por dia:</b> ${t} de animação, ${u} ${n} e ${m} de pagam
 strip:n=>`Um segundo na tela: cada quadrado é um frame; os quadrados cheios são ${n} novos.`,
 sumProj:o=>`Animando ${o.dur} a ${o.fps} fps, ${o.exp}, são ${o.frames} frames e ${o.units} ${o.noun}. Recebendo ${o.rate} por segundo, o projeto vale ${o.total} (${o.per} por ${o.sing}).`,
 sumGoal:o=>`Para ganhar ${o.goal} recebendo ${o.rate} por segundo, você precisa animar ${o.dur}: ${o.frames} frames e ${o.units} ${o.noun} a ${o.fps} fps, ${o.exp}.`,
-copy:'Copiar resumo',copied:'Copiado!',copyFail:'Selecione o texto e copie',
+copy:'Copiar resumo',toQuote:'Gerar orçamento em PDF',copied:'Copiado!',copyFail:'Selecione o texto e copie',
 sample:'Valores de exemplo: troque pelos do seu projeto.',
 cmpTitle:'Os quatro fps lado a lado',cmpLede:'Mesma duração, mesmo pagamento por segundo e mesmo “a cada”. O que muda é quanto você vai desenhar.',
 th:(p,s)=>['fps','Frames',p,'Valor por '+s,p+' por dia'],
@@ -268,7 +268,7 @@ perDay:(t,u,n,m)=>`<b>Per day:</b> ${t} of animation, ${u} ${n} and ${m} in pay.
 strip:n=>`One second on screen: each square is a frame; the filled ones are new ${n}.`,
 sumProj:o=>`Animating ${o.dur} at ${o.fps} fps, ${o.exp}, means ${o.frames} frames and ${o.units} ${o.noun}. At ${o.rate} per second, the project is worth ${o.total} (${o.per} per ${o.sing}).`,
 sumGoal:o=>`To earn ${o.goal} at ${o.rate} per second, you need to animate ${o.dur}: ${o.frames} frames and ${o.units} ${o.noun} at ${o.fps} fps, ${o.exp}.`,
-copy:'Copy summary',copied:'Copied!',copyFail:'Select the text and copy it',
+copy:'Copy summary',toQuote:'Make a PDF quote',copied:'Copied!',copyFail:'Select the text and copy it',
 sample:'Example values: replace them with your project’s.',
 cmpTitle:'The four frame rates side by side',cmpLede:'Same length, same pay per second and same “every”. What changes is how much you draw.',
 th:(p,s)=>['fps','Frames',p,'Value per '+s,p+' per day'],
@@ -299,7 +299,7 @@ perDay:(t,u,n,m)=>`<b>Por día:</b> ${t} de animación, ${u} ${n} y ${m} de pago
 strip:n=>`Un segundo en pantalla: cada cuadrado es un fotograma; los rellenos son ${n} nuevos.`,
 sumProj:o=>`Animando ${o.dur} a ${o.fps} fps, ${o.exp}, son ${o.frames} fotogramas y ${o.units} ${o.noun}. Cobrando ${o.rate} por segundo, el proyecto vale ${o.total} (${o.per} por ${o.sing}).`,
 sumGoal:o=>`Para ganar ${o.goal} cobrando ${o.rate} por segundo, necesitas animar ${o.dur}: ${o.frames} fotogramas y ${o.units} ${o.noun} a ${o.fps} fps, ${o.exp}.`,
-copy:'Copiar resumen',copied:'¡Copiado!',copyFail:'Selecciona el texto y cópialo',
+copy:'Copiar resumen',toQuote:'Crear presupuesto en PDF',copied:'¡Copiado!',copyFail:'Selecciona el texto y cópialo',
 sample:'Valores de ejemplo: cámbialos por los de tu proyecto.',
 cmpTitle:'Los cuatro fps lado a lado',cmpLede:'Misma duración, mismo pago por segundo y mismo “cada”. Lo que cambia es cuánto dibujas.',
 th:(p,s)=>['fps','Fotogramas',p,'Valor por '+s,p+' por día'],
@@ -381,6 +381,7 @@ function render(){
   const th=l.th(plur[0].toUpperCase()+plur.slice(1),sing);
   $('cmpHead').innerHTML=th.map(h=>`<th>${h}</th>`).join('');
   $('cmpBody').innerHTML=FPS.map(f=>{const c=calc(f);return`<tr class="${f===S.fps?'on':''}"><td>${f} fps</td><td>${nf(c.frames)}</td><td>${nf(c.units)}</td><td>${money(c.per)}</td><td>${c.days&&c.secs?nf(Math.ceil(c.units/c.days)):'—'}</td></tr>`}).join('');
+  {const q=$('toQuote');if(q)q.href=q.getAttribute('href').split('#')[0]+'#'+S.lang}
   drawStrip();save();
 }
 const sv=$('strip');
