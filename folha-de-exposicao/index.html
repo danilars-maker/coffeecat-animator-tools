@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Folha de exposição · Coffee Cat Studio</title>
+<meta name="description" content="Folha de exposição (X-sheet) gratuita para animadores: suba o áudio, veja a onda frame a frame, anote sílabas, fonemas e ações e baixe a folha em PNG para usar no Photoshop.">
+<link rel="canonical" href="https://coffeecat.com.br/ferramentas/folha-de-exposicao/">
+<meta property="og:title" content="Folha de exposição · Coffee Cat Studio">
+<meta property="og:image" content="https://coffeecat.com.br/assets/compartilhar.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: friendly studio tool for animators who dislike paperwork
+   IDEA: a paper exposure sheet: frames run down the page, thick line every second, audio drawn beside the frames
+   PICTURE: the sheet itself, with the waveform column and the blue playhead row
+   COLOUR and TYPE: light grey page, white sheet, slate ink, animator's blue pencil; Fredoka + Nunito (same family as the calculator)
+   LAYOUT: settings row, overview waveform with transport, then sheet left and phoneme pad/export right */
+:root{color-scheme:light dark;
+--bg:light-dark(#f3f5f8,#1a1f27);--ink:light-dark(#2b3440,#e8edf3);--soft:light-dark(#647083,#9aa6b8);
+--band:light-dark(#e4e9f0,#222833);--card:light-dark(#ffffff,#262d38);--line:light-dark(#d6dde7,#38424f);
+--line2:light-dark(#9aa6b8,#5b6676);--line3:light-dark(#2b3440,#c9d2de);
+--blue:light-dark(#2563eb,#6ea0ff);--blueink:light-dark(#ffffff,#0c1730);--sel:light-dark(#dbe7ff,#24365e);--cur:light-dark(#2563eb,#6ea0ff)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Nunito,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3vw,40px) max(4vw,14px)}
+.wrap{max-width:1320px;margin:0 auto}
+h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;font-weight:600;line-height:1.05;margin:0;text-wrap:balance}
+.top{background:var(--band)}
+.bar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--soft)}
+.brand svg{width:30px;height:30px;flex:none}
+.tright{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.home{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--card);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none}
+.home:hover{color:var(--blue)}
+.langs{display:flex;gap:4px;background:var(--card);border-radius:999px;padding:4px}
+.langs button{all:unset;cursor:pointer;padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;color:var(--soft)}
+.langs button[aria-pressed=true]{background:var(--blue);color:var(--blueink)}
+h1{font-size:clamp(30px,4.4vw,48px)}
+.lede{color:var(--soft);max-width:70ch;margin:8px 0 0;font-size:17px}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;background:var(--card);border:2px solid var(--line);font-weight:800;font-size:15px;white-space:nowrap}
+.btn:hover{border-color:var(--blue)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:var(--blueink)}
+.btn.warn{border-color:#e23a46;color:#e23a46}
+.btn svg{width:18px;height:18px;flex:none}
+.btn:disabled,.btn[aria-disabled=true]{opacity:.5;cursor:default}
+.set{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;margin-top:20px}
+.card{background:var(--card);border-radius:18px;padding:16px 18px}
+.lbl{font-weight:800;font-size:14px;margin:0 0 8px;display:block}
+.drop{border:2px dashed var(--line2);border-radius:14px;padding:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.drop.over{border-color:var(--blue);background:var(--sel)}
+.drop p{margin:0;color:var(--soft);font-size:14px}
+.drop b{color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.f{display:flex;flex-direction:column;gap:4px}
+.f span{font-size:13px;font-weight:700;color:var(--soft)}
+.f input{font:inherit;font-size:16px;font-weight:700;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 10px;min-height:44px;width:100%}
+.f input:focus{border-color:var(--blue);outline:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{all:unset;cursor:pointer;min-height:44px;min-width:44px;padding:0 12px;display:inline-grid;place-items:center;border-radius:10px;background:var(--bg);font-weight:800;border:2px solid transparent}
+.chip[aria-pressed=true]{background:var(--blue);color:var(--blueink)}
+.hint{color:var(--soft);font-size:13px;margin:8px 0 0}
+.ov{margin-top:16px;background:var(--card);border-radius:18px;padding:12px 14px}
+.trans{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.tc{font-family:Fredoka,sans-serif;font-weight:600;font-size:22px;margin-left:auto;white-space:nowrap}
+.tc small{font-family:Nunito,sans-serif;font-size:13px;color:var(--soft);font-weight:700;margin-left:6px}
+.fig{position:relative;height:72px;cursor:pointer}
+.fig>canvas{position:absolute;inset:0;width:100%;height:100%}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;margin-top:16px;align-items:start}
+.sheetbox{background:var(--card);border-radius:18px;overflow:hidden}
+.pager{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pager b{font-weight:800}
+.sheetwrap{max-height:70vh;overflow:auto}
+.sheet{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+.sheet th{position:sticky;top:0;z-index:2;background:var(--card);font-size:12px;text-align:left;color:var(--soft);padding:8px 6px;border-bottom:2px solid var(--line3);font-weight:800}
+.sheet td{border-bottom:1px solid var(--line);padding:0;height:28px}
+.sheet td+td,.sheet th+th{border-left:1px solid var(--line)}
+.sheet tr.half td{border-bottom-color:var(--line2)}
+.sheet tr.sec td{border-bottom:2px solid var(--line3)}
+.fn{width:58px;text-align:right;padding-right:8px!important;font-variant-numeric:tabular-nums;font-weight:700;color:var(--soft);cursor:pointer;user-select:none}
+tr.secstart .fn{color:var(--ink);font-weight:800}
+.wv{width:110px;position:relative}
+.wv i{position:absolute;top:5px;bottom:5px;left:50%;transform:translateX(-50%);background:var(--blue);border-radius:3px;opacity:.75;min-width:1px}
+.sheet input{all:unset;box-sizing:border-box;width:100%;height:28px;padding:0 8px;font:inherit;font-size:14px;font-weight:700;color:var(--ink)}
+.sheet input:focus{background:var(--sel);box-shadow:inset 0 0 0 2px var(--blue)}
+.c-dlg{width:20%}.c-act{width:34%}.c-drw{width:12%}.c-cam{width:18%}
+tr.sel td{background:var(--sel)}
+tr.cur td.fn{background:var(--cur);color:var(--blueink)}
+tr.cur td{box-shadow:inset 0 2px 0 var(--cur),inset 0 -2px 0 var(--cur)}
+.side{display:grid;gap:16px;position:sticky;top:12px}
+.pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pad button{all:unset;box-sizing:border-box;cursor:pointer;min-height:44px;border-radius:10px;background:var(--bg);display:grid;place-items:center;font-weight:800;font-size:15px;text-align:center;border:2px solid transparent}
+.pad button:hover{border-color:var(--blue)}
+.pad button.wide{grid-column:span 3}
+.selinfo{font-size:14px;color:var(--soft);margin:0 0 10px}
+.selinfo b{color:var(--ink)}
+.stack{display:grid;gap:8px}
+.ck{display:flex;gap:10px;align-items:center;font-weight:700;font-size:14px;min-height:36px;cursor:pointer}
+.ck input{width:20px;height:20px;accent-color:var(--blue)}
+.outs{display:grid;gap:12px;margin-top:12px}
+.outs:empty{display:none}
+.outs figure{margin:0;background:var(--bg);border-radius:12px;padding:10px}
+.outs img{width:100%;height:auto;display:block;border-radius:6px;background:repeating-conic-gradient(#e7ebf1 0 25%,#fff 0 50%) 0 0/16px 16px}
+.outs figcaption{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px;font-size:13px;font-weight:700}
+.outs a{color:var(--blue);font-weight:800}
+.note{font-size:13px;color:var(--soft);margin:8px 0 0}
+.keys{font-size:13px;color:var(--soft);margin:0;padding-left:18px}
+.keys kbd{font:inherit;font-weight:800;color:var(--ink);background:var(--bg);border-radius:6px;padding:1px 6px}
+footer{color:var(--soft);font-size:14px}
+.bmcbox{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;background:var(--card);border-radius:18px;padding:18px 20px}
+.bmcbox p{margin:0;max-width:60ch}.bmcbox b{color:var(--ink);font-size:17px}
+.bmc{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px;border-radius:14px;background:#ffdd00;color:#2b3440;font-weight:800;text-decoration:none}
+footer a{color:var(--blue)}
+.credit{margin-top:14px}
+@media(max-width:1000px){.main{grid-template-columns:minmax(0,1fr)}.side{position:static;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}
+@media(max-width:760px){.set{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:420px){.home span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.tc{margin-left:0}}
+</style>
+</head>
+<body>
+<header class="band top"><div class="wrap">
+  <div class="bar">
+    <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 16h20v10a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8z" fill="#2563eb"/><path d="M28 18h3a4 4 0 0 1 0 8h-3" fill="none" stroke="#2563eb" stroke-width="3"/><path d="M11 16l2-6 4 5M25 16l-2-6-4 5" fill="#2563eb"/><circle cx="15" cy="23" r="1.6" fill="#fff"/><circle cx="21" cy="23" r="1.6" fill="#fff"/></svg><span>Coffee Cat Studio · <span data-t="brand"></span></span></div>
+    <div class="tright">
+      <a class="home" href="https://coffeecat.com.br/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10v9.5h5v-5h3v5h5V10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg><span>Coffee Cat</span></a>
+      <div class="langs" role="group" aria-label="Idioma"><button data-lang="pt">PT</button><button data-lang="en">EN</button><button data-lang="es">ES</button></div>
+    </div>
+  </div>
+  <h1 data-t="title"></h1>
+  <p class="lede" data-t="lede"></p>
+
+  <div class="set">
+    <div class="card">
+      <span class="lbl" data-t="audioL"></span>
+      <div class="drop" id="drop">
+        <p id="audioInfo"></p>
+        <label class="btn pri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="pick"></span><input type="file" id="file" accept="audio/*,.wav,.mp3,.m4a,.ogg,.aac" hidden></label>
+      </div>
+      <p class="hint" data-t="audioHint"></p>
+    </div>
+    <div class="card">
+      <span class="lbl" data-t="fpsL"></span>
+      <div class="chips" id="fps"></div>
+      <div class="row" style="margin-top:10px">
+        <label class="f" style="width:9em"><span data-t="durL"></span><input id="dur" inputmode="decimal"></label>
+        <label class="f" style="flex:1 1 9em"><span data-t="nameL"></span><input id="name" maxlength="60"></label>
+        <label class="f" style="width:6em"><span data-t="sceneL"></span><input id="scene" maxlength="12"></label>
+        <label class="f" style="flex:1 1 9em"><span data-t="animL"></span><input id="anim" maxlength="40"></label>
+      </div>
+    </div>
+  </div>
+</div></header>
+
+<main class="band"><div class="wrap">
+  <div class="ov">
+    <div class="trans">
+      <button class="btn pri" id="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIco" d="M7 4l13 8-13 8z" fill="currentColor"/></svg><span id="playL"></span></button>
+      <button class="btn" id="prev" aria-label="-1">−1</button>
+      <button class="btn" id="next" aria-label="+1">+1</button>
+      <label class="ck"><input type="checkbox" id="scrub"><span data-t="scrubL"></span></label>
+      <div class="tc"><span id="tcF"></span><small id="tcT"></small></div>
+    </div>
+    <div class="fig" id="ovfig" role="img"><canvas id="ov"></canvas></div>
+  </div>
+
+  <div class="main">
+    <div class="sheetbox">
+      <div class="pager">
+        <button class="btn" id="pgPrev" aria-label="‹">‹</button>
+        <span><span data-t="page"></span> <b id="pgN"></b> / <span id="pgT"></span></span>
+        <button class="btn" id="pgNext" aria-label="›">›</button>
+        <span class="hint" style="margin:0 0 0 auto" id="pgRange"></span>
+      </div>
+      <div class="sheetwrap" id="sw">
+        <table class="sheet"><thead><tr id="thead"></tr></thead><tbody id="rows"></tbody></table>
+      </div>
+    </div>
+
+    <aside class="side">
+      <div class="card">
+        <span class="lbl" data-t="padL"></span>
+        <p class="selinfo" id="selinfo"></p>
+        <div class="pad" id="pad"></div>
+        <p class="note" data-t="padHint"></p>
+      </div>
+      <div class="card">
+        <span class="lbl" data-t="expL"></span>
+        <label class="ck"><input type="checkbox" id="transp"><span data-t="transpL"></span></label>
+        <div class="stack">
+          <button class="btn pri" id="pngPage"></button>
+          <button class="btn" id="pngAll"></button>
+        </div>
+        <div class="outs" id="outs"></div>
+        <p class="note" data-t="saveHint"></p>
+      </div>
+      <div class="card">
+        <span class="lbl" data-t="projL"></span>
+        <div class="stack">
+          <button class="btn" id="jsonOut"></button>
+          <label class="btn"><span data-t="jsonIn"></span><input type="file" id="jsonFile" accept=".json,application/json" hidden></label>
+          <button class="btn warn" id="clear"></button>
+        </div>
+        <p class="note" data-t="autosave"></p>
+        <ul class="keys" id="keys"></ul>
+      </div>
+    </aside>
+  </div>
+</div></main>
+
+<footer class="band"><div class="wrap">
+  <div class="bmcbox"><p><b data-t="bmcTitle"></b><br><span data-t="bmcLede"></span></p>
+    <a class="bmc" href="https://buymeacoffee.com/studiocoffeecat" target="_blank" rel="noopener"><span data-t="bmc"></span></a></div>
+  <div class="credit"><span data-t="footer"></span> <a href="https://coffeecat.com.br">coffeecat.com.br</a></div>
+</div></footer>
+
+<script>
+{
+const T={
+pt:{loc:'pt-BR',brand:'Ferramentas para animadores',title:'Folha de exposição',
+lede:'Suba o áudio, veja a onda frame a frame, anote as sílabas, os fonemas e as ações, e baixe a folha em PNG para usar no Photoshop.',
+audioL:'Áudio do diálogo ou da música',pick:'Escolher áudio',noAudio:'Arraste um arquivo de áudio para cá, ou comece com a folha em branco.',
+audioHint:'WAV, MP3, M4A ou OGG. O áudio fica só no seu navegador, nada é enviado para a internet.',
+loading:'Lendo o áudio…',audioErr:'Não consegui ler esse arquivo. Tente um WAV ou MP3.',reup:'Suba o áudio de novo para ouvir. A onda e as anotações foram guardadas.',
+fpsL:'Frames por segundo',durL:'Duração (seg)',nameL:'Projeto',sceneL:'Cena',animL:'Animador(a)',
+play:'Tocar',stop:'Parar',scrubL:'Ouvir ao clicar no frame',page:'Página',framesW:'frames',
+cols:['Frame','Áudio','Diálogo','Ação','Desenho','Câmera'],
+padL:'Fonemas (boca)',sel1:f=>`Frame selecionado: <b>${f}</b>`,selN:(a,b,n)=>`Frames <b>${a}</b> a <b>${b}</b> (${n} frames)`,
+rest:'Repouso',clearSel:'Limpar diálogo da seleção',
+padHint:'Clique num frame e escolha a boca. Com Shift + clique você seleciona vários frames: a boca vai no primeiro e a linha de espera nos outros.',
+expL:'Baixar para o Photoshop',transpL:'Fundo transparente',pngPage:'PNG desta página',pngAll:'PNG de todas as páginas',
+dl:'Baixar',saveHint:'Se o botão Baixar não funcionar, clique com o botão direito na imagem e escolha “Salvar imagem como”.',
+projL:'Projeto',jsonOut:'Salvar projeto (.json)',jsonIn:'Abrir projeto (.json)',clear:'Limpar a folha',clear2:'Clique de novo para limpar tudo',
+autosave:'A folha fica salva neste navegador automaticamente.',jsonErr:'Esse arquivo não é um projeto da folha de exposição.',
+keys:['<kbd>Espaço</kbd> toca e para','<kbd>↑</kbd> <kbd>↓</kbd> anda um frame','<kbd>Enter</kbd> desce para o próximo frame'],
+sheetT:'FOLHA DE EXPOSIÇÃO',hProj:'Projeto',hScene:'Cena',hAnim:'Animador(a)',hPage:'Página',hAudio:'Áudio',
+bmcTitle:'A folha de exposição é gratuita.',bmcLede:'Se ela te ajudou, um cafezinho ajuda a Coffee Cat a criar mais ferramentas para animadores.',bmc:'Pague um café',
+footer:'Feito pela Coffee Cat Studio, para animadores.'},
+en:{loc:'en-US',brand:'Tools for animators',title:'Exposure sheet',
+lede:'Upload the audio, see the waveform frame by frame, write down syllables, mouth shapes and actions, and download the sheet as a PNG for Photoshop.',
+audioL:'Dialogue or music audio',pick:'Choose audio',noAudio:'Drag an audio file here, or start with a blank sheet.',
+audioHint:'WAV, MP3, M4A or OGG. The audio stays in your browser; nothing is uploaded.',
+loading:'Reading the audio…',audioErr:'I couldn’t read this file. Try a WAV or MP3.',reup:'Upload the audio again to hear it. The waveform and notes were kept.',
+fpsL:'Frames per second',durL:'Length (sec)',nameL:'Project',sceneL:'Scene',animL:'Animator',
+play:'Play',stop:'Stop',scrubL:'Hear a frame when clicking it',page:'Page',framesW:'frames',
+cols:['Frame','Audio','Dialogue','Action','Drawing','Camera'],
+padL:'Mouth shapes',sel1:f=>`Selected frame: <b>${f}</b>`,selN:(a,b,n)=>`Frames <b>${a}</b> to <b>${b}</b> (${n} frames)`,
+rest:'Rest',clearSel:'Clear dialogue in selection',
+padHint:'Click a frame and pick a mouth. Shift + click selects several frames: the mouth goes on the first one and a hold line on the rest.',
+expL:'Download for Photoshop',transpL:'Transparent background',pngPage:'PNG of this page',pngAll:'PNG of all pages',
+dl:'Download',saveHint:'If Download doesn’t work, right-click the image and choose “Save image as”.',
+projL:'Project',jsonOut:'Save project (.json)',jsonIn:'Open project (.json)',clear:'Clear the sheet',clear2:'Click again to clear everything',
+autosave:'The sheet is saved in this browser automatically.',jsonErr:'This file is not an exposure sheet project.',
+keys:['<kbd>Space</kbd> plays and stops','<kbd>↑</kbd> <kbd>↓</kbd> moves one frame','<kbd>Enter</kbd> goes to the next frame'],
+sheetT:'EXPOSURE SHEET',hProj:'Project',hScene:'Scene',hAnim:'Animator',hPage:'Page',hAudio:'Audio',
+bmcTitle:'This exposure sheet is free.',bmcLede:'If it helped you, a coffee helps Coffee Cat make more tools for animators.',bmc:'Buy me a coffee',
+footer:'Made by Coffee Cat Studio, for animators.'},
+es:{loc:'es-ES',brand:'Herramientas para animadores',title:'Hoja de exposición',
+lede:'Sube el audio, mira la onda fotograma a fotograma, anota sílabas, bocas y acciones, y descarga la hoja en PNG para usarla en Photoshop.',
+audioL:'Audio del diálogo o de la música',pick:'Elegir audio',noAudio:'Arrastra un archivo de audio aquí, o empieza con la hoja en blanco.',
+audioHint:'WAV, MP3, M4A u OGG. El audio se queda en tu navegador; no se envía nada.',
+loading:'Leyendo el audio…',audioErr:'No pude leer este archivo. Prueba con un WAV o MP3.',reup:'Vuelve a subir el audio para escucharlo. La onda y las notas se guardaron.',
+fpsL:'Fotogramas por segundo',durL:'Duración (seg)',nameL:'Proyecto',sceneL:'Escena',animL:'Animador(a)',
+play:'Reproducir',stop:'Parar',scrubL:'Escuchar al hacer clic en el fotograma',page:'Página',framesW:'fotogramas',
+cols:['Fotograma','Audio','Diálogo','Acción','Dibujo','Cámara'],
+padL:'Bocas (fonemas)',sel1:f=>`Fotograma seleccionado: <b>${f}</b>`,selN:(a,b,n)=>`Fotogramas <b>${a}</b> a <b>${b}</b> (${n} fotogramas)`,
+rest:'Reposo',clearSel:'Borrar diálogo de la selección',
+padHint:'Haz clic en un fotograma y elige la boca. Con Mayús + clic seleccionas varios: la boca va en el primero y la línea de espera en los demás.',
+expL:'Descargar para Photoshop',transpL:'Fondo transparente',pngPage:'PNG de esta página',pngAll:'PNG de todas las páginas',
+dl:'Descargar',saveHint:'Si Descargar no funciona, haz clic derecho en la imagen y elige “Guardar imagen como”.',
+projL:'Proyecto',jsonOut:'Guardar proyecto (.json)',jsonIn:'Abrir proyecto (.json)',clear:'Borrar la hoja',clear2:'Haz clic otra vez para borrar todo',
+autosave:'La hoja se guarda sola en este navegador.',jsonErr:'Este archivo no es un proyecto de hoja de exposición.',
+keys:['<kbd>Espacio</kbd> reproduce y para','<kbd>↑</kbd> <kbd>↓</kbd> avanza un fotograma','<kbd>Enter</kbd> baja al siguiente fotograma'],
+sheetT:'HOJA DE EXPOSICIÓN',hProj:'Proyecto',hScene:'Escena',hAnim:'Animador(a)',hPage:'Página',hAudio:'Audio',
+bmcTitle:'La hoja de exposición es gratuita.',bmcLede:'Si te ayudó, un café ayuda a Coffee Cat a crear más herramientas para animadores.',bmc:'Invítame un café',
+footer:'Hecho por Coffee Cat Studio, para animadores.'}};
+
+const PHON=['A I','E','O','U','M B P','F V','L','W Q','etc'];
+const KEYS=['dlg','act','drw','cam'];
+const FPS=[8,12,24,30],HI=120,LS='cc-xsheet';
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const blank=()=>({lang:null,fps:24,frames:120,name:'',scene:'',anim:'',audio:'',hi:[],cells:{dlg:[],act:[],drw:[],cam:[]},cur:0,a:0,b:0,scrub:true,transp:false});
+let S=blank();
+try{const v=JSON.parse(localStorage.getItem(LS)||'null');if(v&&v.cells)S=Object.assign(blank(),v)}catch(e){}
+{const hl=(location.hash||'').slice(1);if(T[hl])S.lang=hl}
+if(!S.lang){const n=(navigator.language||'pt').slice(0,2);S.lang=T[n]?n:'pt'}
+const L=()=>T[S.lang];
+let saveT=0;const save=()=>{clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}},300)};
+
+let buf=null,actx=null,src=null,playing=false,t0=0,pFrom=0,pTo=0,raf=0,audioMsg='';
+const pageSize=()=>S.fps<=12?S.fps*8:S.fps*4;
+const pages=()=>Math.max(1,Math.ceil(S.frames/pageSize()));
+const curPage=()=>Math.floor(S.cur/pageSize());
+const peaks=()=>{const out=new Array(S.frames).fill(0);if(!S.hi.length)return out;const g=HI/S.fps;for(let f=0;f<S.frames;f++){let m=0;const a=Math.floor(f*g),b=Math.floor((f+1)*g);for(let i=a;i<b&&i<S.hi.length;i++)if(S.hi[i]>m)m=S.hi[i];out[f]=m}return out};
+let PK=peaks();
+const tcode=f=>{const s=Math.floor(f/S.fps),ff=f%S.fps,p=n=>String(n).padStart(2,'0');return p(Math.floor(s/3600))+':'+p(Math.floor(s/60)%60)+':'+p(s%60)+':'+p(ff)};
+const lo=()=>Math.min(S.a,S.b),hi2=()=>Math.max(S.a,S.b);
+
+function staticText(){
+  const l=L();document.documentElement.lang=l.loc;document.title=l.title+' · Coffee Cat Studio';
+  document.querySelectorAll('[data-t]').forEach(e=>{const v=l[e.dataset.t];if(typeof v==='string')e.textContent=v});
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===S.lang));
+  $('fps').innerHTML=FPS.map(f=>`<button class="chip" data-fps="${f}" aria-pressed="${S.fps===f}">${f} fps</button>`).join('');
+  $('thead').innerHTML=l.cols.map((c,i)=>`<th class="${['fn','wv','c-dlg','c-act','c-drw','c-cam'][i]}">${esc(c)}</th>`).join('');
+  $('pad').innerHTML=PHON.map(p=>`<button data-ph="${p}">${p}</button>`).join('')+`<button class="wide" data-ph="${esc(l.rest)}">${esc(l.rest)}</button><button class="wide" data-ph="">${esc(l.clearSel)}</button>`;
+  $('pngPage').textContent=l.pngPage;$('pngAll').textContent=l.pngAll;$('jsonOut').textContent=l.jsonOut;$('clear').textContent=l.clear;
+  $('keys').innerHTML=l.keys.map(k=>`<li>${k}</li>`).join('');
+  ['name','scene','anim'].forEach(k=>{if(document.activeElement!==$(k))$(k).value=S[k]});
+  $('scrub').checked=S.scrub;$('transp').checked=S.transp;
+  setDurField();audioInfo();renderRows();renderInfo();
+}
+function setDurField(){if(document.activeElement!==$('dur'))$('dur').value=+(S.frames/S.fps).toFixed(2)}
+function audioInfo(){
+  const l=L();let t;
+  if(audioMsg)t=esc(audioMsg);
+  else if(buf)t=`<b>${esc(S.audio)}</b> · ${tcode(S.frames)} · ${S.frames} ${l.framesW}`;
+  else if(S.audio)t=`<b>${esc(S.audio)}</b><br>${esc(l.reup)}`;
+  else t=esc(l.noAudio);
+  $('audioInfo').innerHTML=t;
+}
+function renderRows(){
+  const ps=pageSize(),p=Math.min(curPage(),pages()-1),a=p*ps,b=Math.min(S.frames,a+ps);
+  const half=Math.max(1,Math.round(S.fps/2));
+  let h='';
+  for(let f=a;f<b;f++){
+    const n=f+1,cls=[];if(n%S.fps===0)cls.push('sec');else if(n%half===0)cls.push('half');if(f%S.fps===0)cls.push('secstart');
+    if(f>=lo()&&f<=hi2())cls.push('sel');if(f===S.cur)cls.push('cur');
+    h+=`<tr data-f="${f}" class="${cls.join(' ')}"><td class="fn" data-pick="${f}">${n}</td><td class="wv"><i style="width:${Math.max(2,Math.round(PK[f]*96))}%"></i></td>`+
+      KEYS.map(k=>`<td><input data-f="${f}" data-k="${k}" value="${esc(S.cells[k][f]||'')}" aria-label="${esc(L().cols[KEYS.indexOf(k)+2])} ${n}"></td>`).join('')+'</tr>';
+  }
+  $('rows').innerHTML=h;
+  $('pgN').textContent=p+1;$('pgT').textContent=pages();
+  $('pgRange').textContent=`${a+1}–${b} · ${tcode(a)} → ${tcode(b)}`;
+  $('pgPrev').disabled=p<=0;$('pgNext').disabled=p>=pages()-1;
+}
+function renderInfo(){
+  const l=L(),A=lo()+1,B=hi2()+1;
+  $('selinfo').innerHTML=A===B?l.sel1(A):l.selN(A,B,B-A+1);
+  $('tcF').textContent=tcode(S.cur);$('tcT').textContent=`${l.cols[0]} ${S.cur+1}`;
+  $('playL').textContent=playing?l.stop:l.play;
+  $('playIco').setAttribute('d',playing?'M6 5h4v14H6zM14 5h4v14h-4z':'M7 4l13 8-13 8z');
+  drawOv();
+}
+function markRows(){
+  const rows=$('rows').children;
+  for(const r of rows){const f=+r.dataset.f;r.classList.toggle('sel',f>=lo()&&f<=hi2());r.classList.toggle('cur',f===S.cur)}
+}
+function setCur(f,{select=true,extend=false,follow=true}={}){
+  f=Math.max(0,Math.min(S.frames-1,f));const pOld=curPage();S.cur=f;
+  if(select){if(extend)S.b=f;else{S.a=f;S.b=f}}
+  if(curPage()!==pOld)renderRows();else markRows();
+  if(follow){const r=$('rows').querySelector(`tr[data-f="${f}"]`);if(r){const sw=$('sw'),rt=r.offsetTop,rh=r.offsetHeight;if(rt<sw.scrollTop+32||rt+rh>sw.scrollTop+sw.clientHeight)sw.scrollTop=rt-sw.clientHeight/3}}
+  renderInfo();save();
+}
+/* overview */
+const ov=$('ov');
+const probe=document.createElement('span');probe.style.display='none';document.body.append(probe);
+const col=v=>{probe.style.color=`var(${v})`;return getComputedStyle(probe).color||'#2563eb'};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>drawOv());new MutationObserver(()=>drawOv()).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+function drawOv(){
+  const W=ov.clientWidth,H=ov.clientHeight;if(!W)return;const dpr=window.devicePixelRatio||1;
+  if(ov.width!==Math.round(W*dpr)){ov.width=Math.round(W*dpr);ov.height=Math.round(H*dpr)}
+  const c=ov.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+  const blue=col('--blue'),line=col('--line'),sel=col('--sel');
+  const n=S.frames,x=f=>f/n*W,ps=pageSize(),p=curPage();
+  c.fillStyle=sel;c.fillRect(x(p*ps),0,Math.max(2,x(Math.min(n,(p+1)*ps))-x(p*ps)),H);
+  c.strokeStyle=line;c.lineWidth=1;for(let s=0;s<=n;s+=S.fps){const xx=Math.round(x(s))+.5;c.beginPath();c.moveTo(xx,H-8);c.lineTo(xx,H);c.stroke()}
+  c.fillStyle=blue;const bw=W/n;
+  if(PK.some(v=>v>0)){for(let f=0;f<n;f++){const h=Math.max(1,PK[f]*(H-14));c.globalAlpha=.7;c.fillRect(x(f),(H-8-h)/2,Math.max(1,bw-(bw>3?1:0)),h)}}
+  else{c.globalAlpha=.35;c.fillRect(0,(H-8)/2-1,W,2)}
+  c.globalAlpha=1;c.fillStyle=blue;c.fillRect(Math.round(x(S.cur)),0,Math.max(2,bw),H);
+  $('ovfig').setAttribute('aria-label',`${L().cols[1]}: ${tcode(S.cur)}`);
+}
+const ro=new ResizeObserver(drawOv);ro.observe(ov);
+$('ovfig').addEventListener('click',e=>{const r=ov.getBoundingClientRect();const f=Math.floor((e.clientX-r.left)/r.width*S.frames);stop();setCur(f);if(S.scrub)scrubAt(f)});
+/* audio */
+function ctx(){if(!actx){const A=window.AudioContext||window.webkitAudioContext;if(A)actx=new A()}if(actx&&actx.state==='suspended')actx.resume();return actx}
+async function loadAudio(file){
+  audioMsg=L().loading;audioInfo();
+  try{
+    const ab=await file.arrayBuffer();const c=ctx();if(!c)throw 0;
+    buf=await new Promise((res,rej)=>{const p=c.decodeAudioData(ab,res,rej);if(p&&p.then)p.then(res,rej)});
+    const ch=[...Array(buf.numberOfChannels).keys()].slice(0,2).map(i=>buf.getChannelData(i));
+    const win=buf.sampleRate/HI,n=Math.ceil(buf.duration*HI),hi=new Array(n);let gmax=0;
+    for(let i=0;i<n;i++){let m=0;const a=Math.floor(i*win),b=Math.min(ch[0].length,Math.floor((i+1)*win));for(const d of ch)for(let j=a;j<b;j+=2){const v=d[j]<0?-d[j]:d[j];if(v>m)m=v}hi[i]=m;if(m>gmax)gmax=m}
+    S.hi=hi.map(v=>gmax?Math.round(v/gmax*1000)/1000:0);
+    S.audio=file.name;S.frames=Math.max(1,Math.ceil(buf.duration*S.fps-1e-6));S.cur=0;S.a=0;S.b=0;audioMsg='';
+    PK=peaks();setDurField();audioInfo();renderRows();renderInfo();save();
+  }catch(err){buf=null;audioMsg=L().audioErr;audioInfo()}
+}
+function stop(){if(src){try{src.onended=null;src.stop()}catch(e){}src=null}playing=false;cancelAnimationFrame(raf);renderInfo()}
+function play(){
+  if(playing){stop();return}
+  let a=lo(),b=hi2();if(a===b){a=S.cur;b=S.frames-1}
+  pFrom=a;pTo=b;playing=true;
+  const c=buf?ctx():null;
+  if(c){src=c.createBufferSource();src.buffer=buf;src.connect(c.destination);src.start(0,a/S.fps,(b-a+1)/S.fps);t0=c.currentTime}
+  else t0=performance.now()/1000;
+  const tick=()=>{if(!playing)return;const now=c?c.currentTime:performance.now()/1000;const f=pFrom+Math.floor((now-t0)*S.fps);
+    if(f>pTo){stop();return}if(f!==S.cur)setCur(f,{select:false});raf=requestAnimationFrame(tick)};
+  renderInfo();raf=requestAnimationFrame(tick);
+}
+function scrubAt(f){if(!buf)return;const c=ctx();if(!c)return;try{const s=c.createBufferSource();s.buffer=buf;s.connect(c.destination);s.start(0,f/S.fps,Math.max(1/S.fps,.12))}catch(e){}}
+/* PNG */
+function drawPage(p){
+  const l=L(),sc=2,ps=pageSize(),a=p*ps,cw=[58,112,150,240,84,130],pad=24,rowH=20,head=104,foot=34;
+  const W=pad*2+cw.reduce((x,y)=>x+y,0),H=head+rowH*(ps+1)+foot;
+  const cv=document.createElement('canvas');cv.width=W*sc;cv.height=H*sc;const c=cv.getContext('2d');c.scale(sc,sc);
+  if(!S.transp){c.fillStyle='#ffffff';c.fillRect(0,0,W,H)}
+  const ink='#1f2733',soft='#647083',blue='#2563eb',font=(w,s)=>`${w} ${s}px Nunito, Arial, sans-serif`;
+  c.fillStyle=ink;c.font=font(800,18);c.textBaseline='alphabetic';c.fillText(l.sheetT,pad,pad+16);
+  c.font=font(700,11);c.fillStyle=soft;c.textAlign='right';c.fillText(`${l.hPage} ${p+1}/${pages()}`,W-pad,pad+14);c.textAlign='left';
+  const info=[[l.hProj,S.name],[l.hScene,S.scene],[l.hAnim,S.anim],['fps',String(S.fps)],[l.hAudio,S.audio]];
+  let x=pad,y=pad+44;
+  info.forEach(([k,v],i)=>{const w=[230,70,170,50,W-pad*2-230-70-170-50][i];c.fillStyle=soft;c.font=font(700,9);c.fillText(k.toUpperCase(),x,y-14);
+    c.fillStyle=ink;c.font=font(800,12);c.fillText(fit(c,v||'—',w-10),x,y);c.strokeStyle='#c9d2de';c.lineWidth=1;c.beginPath();c.moveTo(x,y+5);c.lineTo(x+w-10,y+5);c.stroke();x+=w});
+  const top=head;let cx=pad;const colX=cw.map(w=>{const s=cx;cx+=w;return s});
+  c.fillStyle='#eef2f7';if(!S.transp||true){c.fillRect(pad,top,W-pad*2,rowH)}
+  c.fillStyle=ink;c.font=font(800,10);l.cols.forEach((t,i)=>c.fillText(fit(c,t.toUpperCase(),cw[i]-10),colX[i]+6,top+14));
+  const half=Math.max(1,Math.round(S.fps/2));
+  for(let r=0;r<ps;r++){
+    const f=a+r,n=f+1,ry=top+rowH*(r+1);
+    if(f<S.frames){
+      c.fillStyle=f%S.fps===0?ink:soft;c.font=font(f%S.fps===0?800:700,10);c.textAlign='right';c.fillText(String(n),colX[0]+cw[0]-8,ry+14);c.textAlign='left';
+      const pk=PK[f]||0;if(pk>0){const bw=Math.max(1,pk*(cw[1]-14));c.fillStyle=blue;c.globalAlpha=.7;c.fillRect(colX[1]+(cw[1]-bw)/2,ry+4,bw,rowH-8);c.globalAlpha=1}
+      c.fillStyle=ink;c.font=font(700,11);
+      KEYS.forEach((k,i)=>{const v=S.cells[k][f];if(!v)return;
+        if(v==='│'){c.strokeStyle=ink;c.lineWidth=1.5;c.beginPath();c.moveTo(colX[i+2]+14,ry);c.lineTo(colX[i+2]+14,ry+rowH);c.stroke()}
+        else c.fillText(fit(c,v,cw[i+2]-12),colX[i+2]+6,ry+14)});
+    }
+    const sec=n%S.fps===0,hf=!sec&&n%half===0;
+    c.strokeStyle=sec?ink:hf?'#9aa6b8':'#d6dde7';c.lineWidth=sec?1.6:1;c.beginPath();c.moveTo(pad,ry+rowH);c.lineTo(W-pad,ry+rowH);c.stroke();
+  }
+  c.strokeStyle=ink;c.lineWidth=1.6;c.strokeRect(pad,top,W-pad*2,rowH*(ps+1));
+  c.lineWidth=1;c.strokeStyle='#9aa6b8';colX.slice(1).forEach(xx=>{c.beginPath();c.moveTo(xx,top);c.lineTo(xx,top+rowH*(ps+1));c.stroke()});
+  c.strokeStyle=ink;c.beginPath();c.moveTo(pad,top+rowH);c.lineTo(W-pad,top+rowH);c.stroke();
+  c.fillStyle=soft;c.font=font(700,9);c.fillText('Coffee Cat Studio · coffeecat.com.br/ferramentas',pad,H-14);
+  return cv;
+}
+function fit(c,t,w){t=String(t);if(c.measureText(t).width<=w)return t;while(t.length>1&&c.measureText(t+'…').width>w)t=t.slice(0,-1);return t+'…'}
+const slug=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function addOut(blob,name,isImg){
+  const url=URL.createObjectURL(blob),fig=document.createElement('figure');
+  fig.innerHTML=(isImg?`<img alt="">`:'')+`<figcaption><span></span><a download>${esc(L().dl)}</a></figcaption>`;
+  if(isImg)fig.querySelector('img').src=url;fig.querySelector('span').textContent=name;const a=fig.querySelector('a');a.href=url;a.setAttribute('download',name);
+  $('outs').prepend(fig);
+}
+function exportPages(list){
+  $('outs').innerHTML='';const base=(slug(S.name)||'folha')+(S.scene?'_cena-'+slug(S.scene):'');
+  list.slice().reverse().forEach(p=>drawPage(p).toBlob(b=>{if(b)addOut(b,`${base}_p${String(p+1).padStart(2,'0')}.png`,true)},'image/png'));
+}
+/* events */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button,[data-pick]');if(!b)return;const d=b.dataset;
+  if(d.lang){S.lang=d.lang;staticText();save()}
+  else if(d.fps){const sec=S.frames/S.fps;S.fps=+d.fps;S.frames=Math.max(1,Math.ceil((buf?buf.duration:sec)*S.fps-1e-6));S.cur=Math.min(S.cur,S.frames-1);S.a=S.b=S.cur;PK=peaks();stop();staticText();save()}
+  else if(d.pick!==undefined){stop();setCur(+d.pick,{extend:e.shiftKey,follow:false});if(S.scrub)scrubAt(+d.pick)}
+  else if(d.ph!==undefined){const A=lo(),B=hi2();for(let f=A;f<=B;f++)S.cells.dlg[f]=d.ph===''?'':(f===A?d.ph:'│');renderRows();save()}
+  else if(b.id==='play')play();
+  else if(b.id==='prev'){stop();setCur(S.cur-1);if(S.scrub)scrubAt(S.cur)}
+  else if(b.id==='next'){stop();setCur(S.cur+1);if(S.scrub)scrubAt(S.cur)}
+  else if(b.id==='pgPrev'||b.id==='pgNext'){stop();const p=curPage()+(b.id==='pgNext'?1:-1);setCur(Math.max(0,Math.min(pages()-1,p))*pageSize());$('sw').scrollTop=0}
+  else if(b.id==='pngPage')exportPages([curPage()]);
+  else if(b.id==='pngAll')exportPages([...Array(pages()).keys()]);
+  else if(b.id==='jsonOut'){const o=JSON.stringify({type:'coffeecat-xsheet',v:1,...S});$('outs').innerHTML='';addOut(new Blob([o],{type:'application/json'}),(slug(S.name)||'folha')+'.json',false)}
+  else if(b.id==='clear'){if(b.dataset.arm){const lang=S.lang;S=blank();S.lang=lang;buf=null;PK=peaks();stop();$('outs').innerHTML='';delete b.dataset.arm;staticText();save()}
+    else{b.dataset.arm=1;b.textContent=L().clear2;setTimeout(()=>{delete b.dataset.arm;b.textContent=L().clear},3000)}}
+});
+$('rows').addEventListener('input',e=>{const t=e.target;if(t.dataset.k){S.cells[t.dataset.k][+t.dataset.f]=t.value;save()}});
+$('rows').addEventListener('focusin',e=>{const t=e.target;if(t.dataset.f!==undefined){const f=+t.dataset.f;if(f!==S.cur){S.cur=f;S.a=S.b=f;markRows();renderInfo();save()}}});
+$('rows').addEventListener('keydown',e=>{const t=e.target;if(!t.dataset.k)return;
+  if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const f=+t.dataset.f+(e.key==='ArrowUp'?-1:1);if(f<0||f>=S.frames)return;setCur(f);
+    const n=$('rows').querySelector(`input[data-f="${f}"][data-k="${t.dataset.k}"]`);if(n)n.focus()}});
+document.addEventListener('keydown',e=>{const tag=(e.target.tagName||'').toLowerCase();if(tag==='input'||tag==='textarea')return;
+  if(e.key===' '){e.preventDefault();play()}else if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();stop();setCur(S.cur+1,{extend:e.shiftKey});if(S.scrub)scrubAt(S.cur)}
+  else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();stop();setCur(S.cur-1,{extend:e.shiftKey});if(S.scrub)scrubAt(S.cur)}});
+['name','scene','anim'].forEach(k=>$(k).addEventListener('input',e=>{S[k]=e.target.value;save()}));
+$('dur').addEventListener('change',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(v>0){S.frames=Math.max(1,Math.min(S.fps*600,Math.round(v*S.fps)));S.cur=Math.min(S.cur,S.frames-1);S.a=S.b=S.cur;PK=peaks();renderRows();renderInfo();save()}setDurField()});
+$('scrub').addEventListener('change',e=>{S.scrub=e.target.checked;save()});
+$('transp').addEventListener('change',e=>{S.transp=e.target.checked;save()});
+$('file').addEventListener('change',e=>{const f=e.target.files[0];if(f){stop();loadAudio(f)}e.target.value=''});
+const dz=$('drop');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');const f=e.dataTransfer.files[0];if(f){stop();loadAudio(f)}});
+$('jsonFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{const o=JSON.parse(await f.text());if(o.type!=='coffeecat-xsheet'||!o.cells)throw 0;const lang=S.lang;S=Object.assign(blank(),o);delete S.type;delete S.v;S.lang=lang;
+    KEYS.forEach(k=>{if(!Array.isArray(S.cells[k]))S.cells[k]=[];S.cells[k]=S.cells[k].map(v=>v==null?'':String(v))});
+    ['name','scene','anim','audio'].forEach(k=>S[k]=String(S[k]||''));S.hi=Array.isArray(S.hi)?S.hi.map(Number).filter(isFinite):[];
+    S.fps=FPS.includes(+S.fps)?+S.fps:24;S.frames=Math.max(1,Math.min(S.fps*600,+S.frames||S.fps*5));S.cur=0;S.a=S.b=0;
+    buf=null;PK=peaks();stop();staticText();save()}
+  catch(err){$('outs').innerHTML='';const p=document.createElement('p');p.className='note';p.textContent=L().jsonErr;$('outs').append(p)}});
+staticText();
+}
+</script>
+</body>
+</html>

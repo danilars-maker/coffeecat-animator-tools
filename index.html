@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ferramentas para animadores · Coffee Cat Studio</title>
+<meta name="description" content="Ferramentas gratuitas da Coffee Cat Studio para animadores: calculadora de frames e pagamento e folha de exposição com áudio.">
+<link rel="canonical" href="https://coffeecat.com.br/ferramentas/">
+<link rel="icon" href="calculadora/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;--bg:light-dark(#f3f5f8,#1a1f27);--ink:light-dark(#2b3440,#e8edf3);--soft:light-dark(#647083,#9aa6b8);--card:light-dark(#fff,#262d38);--line:light-dark(#d6dde7,#38424f);--blue:light-dark(#2563eb,#6ea0ff);--blueink:light-dark(#fff,#0c1730)}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system-ui,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:clamp(24px,4vw,56px) max(4vw,16px)}
+.bar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:28px}
+.brand{display:flex;gap:10px;align-items:center;font-weight:700;color:var(--soft)}
+.brand svg{width:30px;height:30px}
+.tr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.home{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--card);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none}
+.langs{display:flex;gap:4px;background:var(--card);border-radius:999px;padding:4px}
+.langs button{all:unset;cursor:pointer;padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;color:var(--soft)}
+.langs button[aria-pressed=true]{background:var(--blue);color:var(--blueink)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+h1,h2{font-family:Fredoka,Nunito,sans-serif;font-weight:600;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,5vw,50px)}
+.lede{color:var(--soft);font-size:17px;max-width:62ch;margin:10px 0 28px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:var(--card);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:10px;border:2px solid transparent;text-decoration:none;color:inherit}
+a.card:hover{border-color:var(--blue)}
+.card svg{width:48px;height:48px}
+.card h2{font-size:24px}
+.card p{margin:0;color:var(--soft);flex:1}
+.go{align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:12px;background:var(--blue);color:var(--blueink);font-weight:800}
+.soon{margin-top:22px;background:var(--card);border-radius:20px;padding:18px 22px}
+.soon b{display:block;margin-bottom:6px}
+.soon ul{margin:0;padding-left:20px;color:var(--soft)}
+.bmc{margin-top:22px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:var(--card);border-radius:20px;padding:18px 22px}
+.bmc p{margin:0;color:var(--soft);max-width:56ch}
+.bmc a{display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border-radius:14px;background:#ffdd00;color:#2b3440;font-weight:800;text-decoration:none}
+footer{margin-top:22px;color:var(--soft);font-size:14px}footer a{color:var(--blue)}
+@media(max-width:640px){.grid{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 16h20v10a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8z" fill="#2563eb"/><path d="M28 18h3a4 4 0 0 1 0 8h-3" fill="none" stroke="#2563eb" stroke-width="3"/><path d="M11 16l2-6 4 5M25 16l-2-6-4 5" fill="#2563eb"/><circle cx="15" cy="23" r="1.6" fill="#fff"/><circle cx="21" cy="23" r="1.6" fill="#fff"/></svg>Coffee Cat Studio</div>
+    <div class="tr">
+      <a class="home" href="https://coffeecat.com.br/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10v9.5h5v-5h3v5h5V10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>Coffee Cat</a>
+      <div class="langs" role="group" aria-label="Idioma"><button data-lang="pt">PT</button><button data-lang="en">EN</button><button data-lang="es">ES</button></div>
+    </div>
+  </div>
+  <h1 data-t="h1"></h1>
+  <p class="lede" data-t="lede"></p>
+  <div class="grid">
+    <a class="card" id="c1" href="calculadora/">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="6" width="28" height="36" rx="5" fill="#2b3440"/><rect x="14" y="10" width="20" height="8" rx="2" fill="#6ea0ff"/><g fill="#fff"><circle cx="17" cy="25" r="2.4"/><circle cx="24" cy="25" r="2.4"/><circle cx="31" cy="25" r="2.4"/><circle cx="17" cy="32" r="2.4"/><circle cx="24" cy="32" r="2.4"/><circle cx="31" cy="32" r="2.4"/></g></svg>
+      <h2 data-t="t1"></h2><p data-t="d1"></p><span class="go" data-t="use"></span></a>
+    <a class="card" id="c2" href="folha-de-exposicao/">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="5" width="30" height="38" rx="3" fill="#fff" stroke="#2b3440" stroke-width="3"/><path d="M9 13h30M19 5v38M29 5v38" stroke="#2b3440" stroke-width="2"/><path d="M9 19h30M9 25h30M9 31h30M9 37h30" stroke="#2b3440" stroke-width="1.4"/><path d="M11 22c1.5-3 3-3 4.5 0s3 3 2.5-1" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <h2 data-t="t2"></h2><p data-t="d2"></p><span class="go" data-t="use"></span></a>
+  </div>
+  <div class="soon"><b data-t="soonT"></b><ul id="soon"></ul></div>
+  <div class="bmc"><p data-t="bmcP"></p><a href="https://buymeacoffee.com/studiocoffeecat" target="_blank" rel="noopener" data-t="bmc"></a></div>
+  <footer><span data-t="foot"></span> <a href="https://coffeecat.com.br/">coffeecat.com.br</a></footer>
+</div>
+<script>
+{
+const T={
+pt:{h1:'Ferramentas para animadores',lede:'Ferramentas gratuitas da Coffee Cat Studio, feitas por animadores, para tirar as contas e a burocracia do caminho.',t1:'Calculadora do animador',d1:'Quantos frames e desenhos você vai animar e quanto vai receber, por segundo ou por diária.',t2:'Folha de exposição',d2:'Suba o áudio, veja a onda frame a frame, anote sílabas, bocas e ações e baixe a folha em PNG para o Photoshop.',use:'Usar agora',soonT:'Em breve',soon:['Pegbar by Coffee Cat, plugin de animação para Photoshop','Gerador de orçamento','Grade de campo e área de segurança','Gerador de timing chart'],bmcP:'Todas as ferramentas são gratuitas. Se alguma te ajudou, um cafezinho ajuda a criar as próximas.',bmc:'Pague um café',foot:'Feito pela Coffee Cat Studio, para animadores.'},
+en:{h1:'Tools for animators',lede:'Free tools by Coffee Cat Studio, made by animators, to take the math and the paperwork out of the way.',t1:'Animator’s calculator',d1:'How many frames and drawings you’ll animate and how much you’ll get paid, per second or per day rate.',t2:'Exposure sheet',d2:'Upload the audio, see the waveform frame by frame, write syllables, mouth shapes and actions, and download the sheet as a PNG for Photoshop.',use:'Use it now',soonT:'Coming soon',soon:['Pegbar by Coffee Cat, an animation plugin for Photoshop','Quote generator','Field guide and safe areas','Timing chart generator'],bmcP:'All tools are free. If one helped you, a coffee helps make the next ones.',bmc:'Buy me a coffee',foot:'Made by Coffee Cat Studio, for animators.'},
+es:{h1:'Herramientas para animadores',lede:'Herramientas gratuitas de Coffee Cat Studio, hechas por animadores, para quitar las cuentas y el papeleo del camino.',t1:'Calculadora del animador',d1:'Cuántos fotogramas y dibujos vas a animar y cuánto vas a cobrar, por segundo o por jornada.',t2:'Hoja de exposición',d2:'Sube el audio, mira la onda fotograma a fotograma, anota sílabas, bocas y acciones y descarga la hoja en PNG para Photoshop.',use:'Usar ahora',soonT:'Próximamente',soon:['Pegbar by Coffee Cat, plugin de animación para Photoshop','Generador de presupuestos','Guía de campo y áreas seguras','Generador de timing chart'],bmcP:'Todas las herramientas son gratuitas. Si alguna te ayudó, un café ayuda a crear las próximas.',bmc:'Invítame un café',foot:'Hecho por Coffee Cat Studio, para animadores.'}};
+let lang=(location.hash||'').slice(1);
+if(!T[lang]){try{lang=localStorage.getItem('cc-tools-lang')}catch(e){}}
+if(!T[lang]){const n=(navigator.language||'pt').slice(0,2);lang=T[n]?n:'pt'}
+function render(){
+  const l=T[lang];document.documentElement.lang=lang==='pt'?'pt-BR':lang;
+  document.querySelectorAll('[data-t]').forEach(e=>{if(typeof l[e.dataset.t]==='string')e.textContent=l[e.dataset.t]});
+  document.getElementById('soon').innerHTML='';l.soon.forEach(s=>{const li=document.createElement('li');li.textContent=s;document.getElementById('soon').append(li)});
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===lang));
+  document.getElementById('c1').href='calculadora/#'+lang;document.getElementById('c2').href='folha-de-exposicao/#'+lang;
+  try{localStorage.setItem('cc-tools-lang',lang)}catch(e){}
+}
+document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>{lang=b.dataset.lang;render()}));
+render();
+}
+</script>
+</body>
+</html>

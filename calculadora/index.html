@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora do animador · Coffee Cat Studio</title>
+<meta name="description" content="Calculadora gratuita para animadores: descubra quantos frames e desenhos vai animar a 8, 12, 24 ou 30 fps e quanto vai receber por segundo ou por diária. Em português, inglês e espanhol.">
+<link rel="canonical" href="https://coffeecat.com.br/ferramentas/calculadora/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Calculadora do animador · Coffee Cat Studio">
+<meta property="og:description" content="Frames, desenhos e pagamento por segundo ou por diária, sem planilha e sem fórmula.">
+<meta property="og:url" content="https://coffeecat.com.br/ferramentas/calculadora/">
+<meta property="og:image" content="https://coffeecat.com.br/ferramentas/calculadora/icon-512.png">
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: friendly studio tool, no jargon, for artists who dislike spreadsheets
+   IDEA: an exposure sheet / film strip: one second of frames, drawings marked in blue pencil
+   PICTURE: live result card (blue) with a film strip showing which frames get a new drawing
+   COLOUR and TYPE: light grey page and band, slate text, animator's blue pencil for result and selections; Fredoka + Nunito
+   LAYOUT: controls in a calm column left, sticky result right; compare table and how-it-works below */
+:root{color-scheme:light dark;
+--bg:light-dark(#f3f5f8,#1a1f27);--ink:light-dark(#2b3440,#e8edf3);--soft:light-dark(#647083,#9aa6b8);
+--band:light-dark(#e4e9f0,#222833);--card:light-dark(#ffffff,#262d38);--line:light-dark(#d6dde7,#38424f);
+--blue:light-dark(#2563eb,#6ea0ff);--blueink:light-dark(#ffffff,#0c1730);
+--res:light-dark(#2563eb,#2c58c4)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;font-weight:600;line-height:1.05;text-wrap:balance;margin:0}
+.top{background:var(--band);color:var(--ink);padding-bottom:clamp(28px,4vw,48px)}
+.bar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:28px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--soft)}
+.brand svg{width:34px;height:34px;flex:none}
+.tright{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.home{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--card);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none}
+.home:hover{color:var(--blue)}.home:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+@media(max-width:420px){.home span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+.langs{display:flex;gap:4px;background:var(--card);border-radius:999px;padding:4px}
+.langs button{all:unset;cursor:pointer;padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;color:var(--soft);min-height:28px}
+.langs button[aria-pressed=true]{background:var(--blue);color:var(--blueink)}
+.langs button:focus-visible,.chip:focus-visible,.tcard:focus-visible,.btn:focus-visible,.step:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.top h1{font-size:clamp(32px,5vw,52px);color:var(--ink)}
+.lede{max-width:62ch;color:var(--soft);font-size:17px;margin:12px 0 0}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--card);border-radius:16px;padding:6px;margin-bottom:22px}
+.tabs button{all:unset;cursor:pointer;text-align:center;padding:12px 10px;border-radius:12px;font-weight:800;min-height:22px}
+.tabs button[aria-pressed=true]{background:var(--blue);color:var(--blueink)}
+.tabs button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+fieldset{border:0;padding:0;margin:0 0 22px}
+legend,.lbl{font-weight:800;font-size:16px;margin-bottom:10px;padding:0;display:flex;gap:10px;align-items:center}
+.num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:13px}
+.hint{color:var(--soft);font-size:14px;margin:8px 0 0}
+.types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tcard{all:unset;cursor:pointer;display:flex;gap:12px;align-items:center;padding:12px;border-radius:14px;background:var(--card);border:2px solid transparent}
+.tcard svg{width:40px;height:40px;flex:none}
+.tcard b{display:block;font-size:15px}.tcard small{display:block;color:var(--soft);font-size:13px;line-height:1.3}
+.tcard[aria-pressed=true]{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 10%,var(--card))}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{all:unset;cursor:pointer;min-width:44px;min-height:44px;padding:0 16px;display:inline-grid;place-items:center;border-radius:12px;background:var(--card);font-weight:800;border:2px solid transparent}
+.chip[aria-pressed=true]{background:var(--blue);color:var(--blueink)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.field{display:flex;align-items:center;background:var(--card);border-radius:12px;border:2px solid var(--line);overflow:hidden}
+.field:focus-within{border-color:var(--blue)}
+.field input,.field select{all:unset;font:inherit;font-size:18px;font-weight:800;padding:10px 12px;width:5.5em;min-height:24px}
+.field select{width:auto;cursor:pointer;padding-right:8px}
+.field span{padding:0 12px 0 0;color:var(--soft);font-weight:700;white-space:nowrap}
+.field .cs{padding:0 0 0 4px;color:var(--ink)}
+.step{all:unset;cursor:pointer;width:44px;height:44px;display:grid;place-items:center;font-size:22px;font-weight:800;color:var(--blue)}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.presets button{all:unset;cursor:pointer;padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);font-size:14px;font-weight:700;min-height:20px}
+.presets button:hover{border-color:var(--blue)}
+.out{position:sticky;top:16px}
+.res{background:var(--res);color:#fff;border-radius:24px;padding:clamp(20px,3vw,32px)}
+.res .k{color:rgba(255,255,255,.88);font-weight:700}
+.big{font-family:Fredoka,sans-serif;font-weight:600;font-size:clamp(40px,7vw,72px);line-height:1;margin:6px 0 18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.figs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.figs div{background:rgba(255,255,255,.15);border-radius:14px;padding:12px 14px}
+.figs b{display:block;font-family:Fredoka,sans-serif;font-weight:600;font-size:clamp(22px,3vw,30px);line-height:1.1;white-space:nowrap}
+.figs small{color:rgba(255,255,255,.88);font-size:13px}
+.figs .hl{background:#fff;color:#1d4fd8}.figs .hl small{color:#1d4fd8}
+.day{margin-top:10px;background:rgba(255,255,255,.15);border-radius:14px;padding:12px 14px;font-size:15px}
+.day:empty{display:none}
+.fig{position:relative;height:96px;margin-top:18px}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.cap{color:rgba(255,255,255,.88);font-size:13px;margin:8px 0 0}
+.sum{margin-top:16px;background:var(--card);border-radius:16px;padding:16px 18px;font-size:16px}
+.btn{all:unset;cursor:pointer;margin-top:10px;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:800}
+.sample{color:var(--soft);font-size:13px;margin:10px 0 0}
+.cmp{background:var(--card)}
+.cmp h2,.how h2{font-size:clamp(26px,3vw,34px)}
+.cmp p{color:var(--soft);margin:8px 0 18px}
+table{width:100%;border-collapse:collapse;background:var(--bg);border-radius:16px;overflow:hidden}
+th,td{padding:14px 16px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:14px;color:var(--soft);font-weight:800}
+tr.on td{background:color-mix(in srgb,var(--blue) 12%,transparent);font-weight:800}
+.how ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding:0;margin:20px 0 0;list-style:none;counter-reset:h}
+.how li{background:var(--card);border-radius:18px;padding:20px}
+.how li b{display:block;font-family:Fredoka,sans-serif;font-weight:600;font-size:19px;margin-bottom:6px}
+footer{border-top:1px solid var(--line);color:var(--soft);font-size:14px}
+footer a{color:var(--blue)}
+.foot{display:grid;gap:18px}
+.bmcbox{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;background:var(--card);border-radius:18px;padding:18px 20px}
+.bmcbox p{margin:0;max-width:60ch;color:var(--soft)}.bmcbox b{color:var(--ink);font-size:17px}
+.bmc{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px;border-radius:14px;background:#ffdd00;color:#2b3440!important;font-weight:800;text-decoration:none}
+.bmc svg{width:24px;height:24px;flex:none}.bmc:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+@media(max-width:900px){.main{grid-template-columns:minmax(0,1fr)}.out{position:static;order:-1}.how ol{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){table{font-size:13px}th,td{padding:10px 8px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 8px;padding-inline-start:9em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:8.5em;margin-inline-start:-9em;white-space:normal;color:var(--soft)}.types{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:no-preference){.big,.figs b{transition:opacity .2s}.flash{animation:fl .35s}@keyframes fl{from{opacity:.35}to{opacity:1}}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="band top"><div class="wrap">
+  <div class="bar">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 16h20v10a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8z" fill="#2563eb"/><path d="M28 18h3a4 4 0 0 1 0 8h-3" fill="none" stroke="#2563eb" stroke-width="3"/><path d="M11 16l2-6 4 5M25 16l-2-6-4 5" fill="#2563eb"/><circle cx="15" cy="23" r="1.6" fill="#fff"/><circle cx="21" cy="23" r="1.6" fill="#fff"/></svg>
+      <span>Coffee Cat Studio · <span data-t="brand"></span></span>
+    </div>
+    <div class="tright">
+      <a class="home" id="home" href="https://coffeecat.com.br/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10v9.5h5v-5h3v5h5V10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg><span data-t="homeL"></span></a>
+      <div class="langs" role="group" aria-label="Idioma">
+        <button data-lang="pt">PT</button><button data-lang="en">EN</button><button data-lang="es">ES</button>
+      </div>
+    </div>
+  </div>
+  <h1 data-t="title"></h1>
+  <p class="lede" data-t="lede"></p>
+</div></header>
+
+<main class="band"><div class="wrap main">
+  <section class="ctrl" aria-labelledby="ctrlh">
+    <h2 id="ctrlh" hidden>Dados</h2>
+    <div class="tabs" role="group">
+      <button id="mProj" data-mode="proj" data-t="modeProj"></button>
+      <button id="mGoal" data-mode="goal" data-t="modeGoal"></button>
+    </div>
+
+    <fieldset><legend><span class="num">1</span><span data-t="s1"></span></legend>
+      <div class="types" id="types"></div></fieldset>
+
+    <fieldset><legend><span class="num">2</span><span data-t="s2"></span></legend>
+      <div class="chips" id="fps"></div></fieldset>
+
+    <fieldset><legend><span class="num">3</span><span data-t="s3"></span></legend>
+      <div class="row"><div class="chips" id="exp"></div><div class="field"><span data-t="other" style="padding:0 0 0 12px"></span><button class="step" data-step="expc" data-d="-1" aria-label="-1">−</button><input id="expc" inputmode="numeric" aria-label="frames" style="width:3em;text-align:center"><button class="step" data-step="expc" data-d="1" aria-label="+1">+</button><span data-t="framesW"></span></div></div><p class="hint" data-t="s3hint"></p></fieldset>
+
+    <fieldset id="durBox"><legend><span class="num">4</span><span data-t="s4proj"></span></legend>
+      <div class="row">
+        <div class="field"><input id="min" inputmode="numeric" aria-label="min"><span data-t="min"></span></div>
+        <div class="field"><button class="step" data-step="sec" data-d="-1" aria-label="-1">−</button><input id="sec" inputmode="decimal" aria-label="s"><span data-t="sec"></span><button class="step" data-step="sec" data-d="1" aria-label="+1">+</button></div>
+      </div>
+      <div class="presets" id="presets"></div></fieldset>
+
+    <fieldset id="goalBox" hidden><legend><span class="num">4</span><span data-t="s4goal"></span></legend>
+      <div class="row"><div class="field"><span class="cs" style="padding:0 0 0 12px"></span><input id="goal" inputmode="decimal" aria-label="goal" style="width:7em"></div></div></fieldset>
+
+    <fieldset><legend><span class="num">5</span><span data-t="s5"></span></legend>
+      <div class="chips" id="pay"></div>
+      <div class="row" style="margin-top:12px">
+        <div class="field" id="rateF"><button class="step" data-step="rate" data-d="-10" aria-label="-10">−</button><span class="cs"></span><input id="rate" inputmode="decimal" aria-label="rate" style="padding-left:6px"><span data-t="perSecW"></span><button class="step" data-step="rate" data-d="10" aria-label="+10">+</button></div>
+        <div class="field" id="dailyF"><button class="step" data-step="daily" data-d="-50" aria-label="-50">−</button><span class="cs"></span><input id="daily" inputmode="decimal" aria-label="daily" style="padding-left:6px"><span data-t="perDayW"></span><button class="step" data-step="daily" data-d="50" aria-label="+50">+</button></div>
+        <div class="field"><select id="cur" aria-label="moeda"><option value="BRL">R$ · BRL</option><option value="USD">US$ · USD</option><option value="EUR">€ · EUR</option></select></div>
+      </div>
+      <p class="hint" id="payHint"></p></fieldset>
+
+    <fieldset><legend><span class="num">6</span><span id="s6l"></span></legend>
+      <div class="row">
+        <div class="field" id="daysF"><button class="step" data-step="days" data-d="-1" aria-label="-1">−</button><input id="days" inputmode="numeric" aria-label="days" placeholder="—" style="width:4em;text-align:center"><span id="daysW"></span><button class="step" data-step="days" data-d="1" aria-label="+1">+</button></div>
+        <div class="field" id="spdF"><button class="step" data-step="spd" data-d="-0.5" aria-label="-0.5">−</button><input id="spd" inputmode="decimal" aria-label="spd" placeholder="—" style="width:4em;text-align:center"><span data-t="secPerDay"></span><button class="step" data-step="spd" data-d="0.5" aria-label="+0.5">+</button></div>
+      </div>
+      <div class="presets" id="dayPresets"></div>
+      <p class="hint" id="s6h"></p></fieldset>
+  </section>
+
+  <section class="out" aria-live="polite">
+    <div class="res">
+      <div class="k" id="rLabel"></div>
+      <div class="big" id="rBig"></div>
+      <div class="figs" id="figs"></div>
+      <div class="day" id="day"></div>
+      <div class="fig"><svg id="strip" role="img"></svg></div>
+      <p class="cap" id="cap"></p>
+    </div>
+    <div class="sum"><span id="sum"></span><br><button class="btn" id="copy" data-t="copy"></button></div>
+    <p class="sample" data-t="sample"></p>
+  </section>
+</div></main>
+
+<section class="band cmp"><div class="wrap">
+  <h2 data-t="cmpTitle"></h2><p data-t="cmpLede"></p>
+  <div class="scroll"><table class="stack"><thead><tr id="cmpHead"></tr></thead><tbody id="cmpBody"></tbody></table></div>
+</div></section>
+
+<section class="band how"><div class="wrap">
+  <h2 data-t="howTitle"></h2><ol id="how"></ol>
+</div></section>
+
+<footer class="band"><div class="wrap foot">
+  <div class="bmcbox"><p><b data-t="bmcTitle"></b><br><span data-t="bmcLede"></span></p>
+    <a class="bmc" id="bmc" href="https://buymeacoffee.com/studiocoffeecat" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="#2b3440"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17" fill="none" stroke="#2b3440" stroke-width="2"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3" stroke="#2b3440" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span data-t="bmc"></span></a></div>
+  <div class="credit"><span data-t="footer"></span> <a href="https://coffeecat.com.br">coffeecat.com.br</a></div>
+</div></footer>
+
+<script>
+{
+const T={
+pt:{loc:'pt-BR',brand:'Ferramentas para animadores',homeL:'Coffee Cat',title:'Calculadora do animador',
+lede:'Descubra quantos frames e desenhos você vai animar e quanto vai receber, sem planilha e sem fórmula.',
+modeProj:'Tenho um projeto',modeGoal:'Tenho uma meta de ganho',
+s1:'Tipo de projeto',s2:'Frames por segundo (fps)',s3:'Um desenho novo a cada',
+s3hint:'É o “animar em 1, em 2 ou em 3”. Em 2, cada desenho fica 2 frames na tela.',
+expo:n=>n===1?'1 frame':n+' frames',expShort:n=>'em '+n,other:'ou digite:',framesW:'frames',
+s4proj:'Duração da animação',s4goal:'Quanto você quer ganhar',min:'min',sec:'seg',
+s5:'Como você recebe',pay:['Por segundo de animação','Por diária'],payHintSec:'O valor que o estúdio paga por segundo de animação pronto.',payHintDay:'O valor que você recebe por dia de trabalho, não importa quanto anime.',perSecW:'por segundo',perDayW:'por dia',
+s6sec:'Prazo (opcional)',s6hSec:'Preencha para ver quanto precisa produzir por dia.',daysWSec:'dias de trabalho',
+s6dayProj:'Quantas diárias você vai trabalhar',s6hDayProj:'Um mês tem cerca de 22 dias úteis.',daysWDay:'diárias',
+s6dayGoal:'Quanto você anima por dia (opcional)',s6hDayGoal:'Em segundos de animação. Preencha para ver quanto vai animar nessas diárias.',secPerDay:'seg por dia',daysShort:'dias',
+fDays:'diárias',eqSec:'por segundo, na prática',rGoalDay:'Você precisa trabalhar',bigDays:(n,f)=>n===1?'1 diária':f+' diárias',
+sumDayProj:o=>`Trabalhando ${o.days} diárias de ${o.daily}, você recebe ${o.total}. Para animar ${o.dur} a ${o.fps} fps, ${o.exp}, são ${o.frames} frames e ${o.units} ${o.noun}: cerca de ${o.uday} ${o.noun} por dia. Na prática, é como receber ${o.rate} por segundo.`,
+sumDayProjNo:o=>`Animando ${o.dur} a ${o.fps} fps, ${o.exp}, são ${o.frames} frames e ${o.units} ${o.noun}. Preencha quantas diárias vai trabalhar para ver o valor.`,
+sumDayGoal:o=>`Para ganhar ${o.goal} cobrando ${o.daily} por diária, você precisa trabalhar ${o.days} diárias e recebe ${o.total}.`,
+sumDayGoalSpd:o=>` Animando ${o.spd} por dia, isso dá ${o.dur}: ${o.frames} frames e ${o.units} ${o.noun}.`,
+types:{stop:['Stop motion','bonecos e objetos, foto a foto'],trad:['Tradicional','desenho no papel'],tradi:['Tradigital','digital, frame a frame'],'3d':['3D','poses no computador']},
+noun:{draw:['desenho','desenhos'],pose:['pose','poses']},
+rProj:'O projeto vale',rGoal:'Você precisa animar',
+fFrames:'frames no total',fUnits:p=>p+' para fazer',fPer:s=>'por '+s,fTime:'timecode',fSec:'de animação',fTotal:'você recebe',
+perDay:(t,u,n,m)=>`<b>Por dia:</b> ${t} de animação, ${u} ${n} e ${m} de pagamento.`,
+strip:n=>`Um segundo na tela: cada quadrado é um frame; os quadrados cheios são ${n} novos.`,
+sumProj:o=>`Animando ${o.dur} a ${o.fps} fps, ${o.exp}, são ${o.frames} frames e ${o.units} ${o.noun}. Recebendo ${o.rate} por segundo, o projeto vale ${o.total} (${o.per} por ${o.sing}).`,
+sumGoal:o=>`Para ganhar ${o.goal} recebendo ${o.rate} por segundo, você precisa animar ${o.dur}: ${o.frames} frames e ${o.units} ${o.noun} a ${o.fps} fps, ${o.exp}.`,
+copy:'Copiar resumo',copied:'Copiado!',copyFail:'Selecione o texto e copie',
+sample:'Valores de exemplo: troque pelos do seu projeto.',
+cmpTitle:'Os quatro fps lado a lado',cmpLede:'Mesma duração, mesmo pagamento por segundo e mesmo “a cada”. O que muda é quanto você vai desenhar.',
+th:(p,s)=>['fps','Frames',p,'Valor por '+s,p+' por dia'],
+howTitle:'Como a conta é feita',
+how:[['Frames','Segundos × fps. Dez segundos a 24 fps são 240 frames.'],['Desenhos','Frames ÷ “a cada”. Em 2, esses 240 frames viram 120 desenhos.'],['Pagamento','Segundos × valor por segundo. O valor por desenho mostra quanto cada um rende.']],
+footer:'Feito pela Coffee Cat Studio, para animadores.',bmcTitle:'A calculadora é gratuita.',bmcLede:'Se ela te ajudou, um cafezinho ajuda a Coffee Cat a criar mais ferramentas para animadores.',bmc:'Pague um café',presetMin:'min'},
+en:{loc:'en-US',brand:'Tools for animators',homeL:'Coffee Cat',title:'Animator’s calculator',
+lede:'Find out how many frames and drawings you’ll animate and how much you’ll get paid, with no spreadsheet and no formulas.',
+modeProj:'I have a project',modeGoal:'I have an income goal',
+s1:'Project type',s2:'Frames per second (fps)',s3:'A new drawing every',
+s3hint:'This is animating “on ones, twos or threes”. On twos, each drawing stays on screen for 2 frames.',
+expo:n=>n===1?'1 frame':n+' frames',expShort:n=>['','on ones','on twos','on threes'][n]||'on '+n+'s',other:'or type:',framesW:'frames',
+s4proj:'Animation length',s4goal:'How much you want to earn',min:'min',sec:'sec',
+s5:'How you get paid',pay:['Per second of animation','Per day rate'],payHintSec:'What the studio pays for each finished second of animation.',payHintDay:'What you get for each working day, however much you animate.',perSecW:'per second',perDayW:'per day',
+s6sec:'Deadline (optional)',s6hSec:'Fill this in to see how much you need to make each day.',daysWSec:'working days',
+s6dayProj:'How many days you’ll work',s6hDayProj:'A month has about 22 working days.',daysWDay:'days',
+s6dayGoal:'How much you animate per day (optional)',s6hDayGoal:'In seconds of animation. Fill this in to see how much you’ll animate in those days.',secPerDay:'sec per day',daysShort:'days',
+fDays:'working days',eqSec:'per second, in practice',rGoalDay:'You need to work',bigDays:(n,f)=>n===1?'1 day':f+' days',
+sumDayProj:o=>`Working ${o.days} days at ${o.daily}, you get ${o.total}. To animate ${o.dur} at ${o.fps} fps, ${o.exp}, means ${o.frames} frames and ${o.units} ${o.noun}: about ${o.uday} ${o.noun} a day. In practice, that is like getting ${o.rate} per second.`,
+sumDayProjNo:o=>`Animating ${o.dur} at ${o.fps} fps, ${o.exp}, means ${o.frames} frames and ${o.units} ${o.noun}. Enter how many days you’ll work to see the value.`,
+sumDayGoal:o=>`To earn ${o.goal} at ${o.daily} a day, you need to work ${o.days} days and you get ${o.total}.`,
+sumDayGoalSpd:o=>` Animating ${o.spd} a day, that adds up to ${o.dur}: ${o.frames} frames and ${o.units} ${o.noun}.`,
+types:{stop:['Stop motion','puppets and objects, shot by shot'],trad:['Traditional','drawn on paper'],tradi:['Tradigital','digital, frame by frame'],'3d':['3D','posed on the computer']},
+noun:{draw:['drawing','drawings'],pose:['pose','poses']},
+rProj:'The project is worth',rGoal:'You need to animate',
+fFrames:'frames in total',fUnits:p=>p+' to make',fPer:s=>'per '+s,fTime:'timecode',fSec:'of animation',fTotal:'you get paid',
+perDay:(t,u,n,m)=>`<b>Per day:</b> ${t} of animation, ${u} ${n} and ${m} in pay.`,
+strip:n=>`One second on screen: each square is a frame; the filled ones are new ${n}.`,
+sumProj:o=>`Animating ${o.dur} at ${o.fps} fps, ${o.exp}, means ${o.frames} frames and ${o.units} ${o.noun}. At ${o.rate} per second, the project is worth ${o.total} (${o.per} per ${o.sing}).`,
+sumGoal:o=>`To earn ${o.goal} at ${o.rate} per second, you need to animate ${o.dur}: ${o.frames} frames and ${o.units} ${o.noun} at ${o.fps} fps, ${o.exp}.`,
+copy:'Copy summary',copied:'Copied!',copyFail:'Select the text and copy it',
+sample:'Example values: replace them with your project’s.',
+cmpTitle:'The four frame rates side by side',cmpLede:'Same length, same pay per second and same “every”. What changes is how much you draw.',
+th:(p,s)=>['fps','Frames',p,'Value per '+s,p+' per day'],
+howTitle:'How the math works',
+how:[['Frames','Seconds × fps. Ten seconds at 24 fps is 240 frames.'],['Drawings','Frames ÷ “every”. On twos, those 240 frames become 120 drawings.'],['Pay','Seconds × pay per second. The value per drawing shows what each one earns you.']],
+footer:'Made by Coffee Cat Studio, for animators.',bmcTitle:'This calculator is free.',bmcLede:'If it helped you, a coffee helps Coffee Cat make more tools for animators.',bmc:'Buy me a coffee',presetMin:'min'},
+es:{loc:'es-ES',brand:'Herramientas para animadores',homeL:'Coffee Cat',title:'Calculadora del animador',
+lede:'Descubre cuántos fotogramas y dibujos vas a animar y cuánto vas a cobrar, sin hoja de cálculo y sin fórmulas.',
+modeProj:'Tengo un proyecto',modeGoal:'Tengo una meta de ingresos',
+s1:'Tipo de proyecto',s2:'Fotogramas por segundo (fps)',s3:'Un dibujo nuevo cada',
+s3hint:'Es animar “en unos, en dos o en tres”. En dos, cada dibujo se queda 2 fotogramas en pantalla.',
+expo:n=>n===1?'1 fotograma':n+' fotogramas',expShort:n=>['','en unos','en dos','en tres'][n]||'en '+n,other:'o escribe:',framesW:'fotogramas',
+s4proj:'Duración de la animación',s4goal:'Cuánto quieres ganar',min:'min',sec:'seg',
+s5:'Cómo cobras',pay:['Por segundo de animación','Por jornada'],payHintSec:'Lo que el estudio paga por cada segundo de animación terminado.',payHintDay:'Lo que cobras por cada día de trabajo, animes lo que animes.',perSecW:'por segundo',perDayW:'por día',
+s6sec:'Plazo (opcional)',s6hSec:'Rellénalo para ver cuánto necesitas producir por día.',daysWSec:'días de trabajo',
+s6dayProj:'Cuántas jornadas vas a trabajar',s6hDayProj:'Un mes tiene unos 22 días laborables.',daysWDay:'jornadas',
+s6dayGoal:'Cuánto animas por día (opcional)',s6hDayGoal:'En segundos de animación. Rellénalo para ver cuánto animarás en esas jornadas.',secPerDay:'seg por día',daysShort:'días',
+fDays:'jornadas',eqSec:'por segundo, en la práctica',rGoalDay:'Necesitas trabajar',bigDays:(n,f)=>n===1?'1 jornada':f+' jornadas',
+sumDayProj:o=>`Trabajando ${o.days} jornadas de ${o.daily}, cobras ${o.total}. Para animar ${o.dur} a ${o.fps} fps, ${o.exp}, son ${o.frames} fotogramas y ${o.units} ${o.noun}: unos ${o.uday} ${o.noun} por día. En la práctica, es como cobrar ${o.rate} por segundo.`,
+sumDayProjNo:o=>`Animando ${o.dur} a ${o.fps} fps, ${o.exp}, son ${o.frames} fotogramas y ${o.units} ${o.noun}. Indica cuántas jornadas vas a trabajar para ver el valor.`,
+sumDayGoal:o=>`Para ganar ${o.goal} cobrando ${o.daily} por jornada, necesitas trabajar ${o.days} jornadas y cobras ${o.total}.`,
+sumDayGoalSpd:o=>` Animando ${o.spd} por día, eso suma ${o.dur}: ${o.frames} fotogramas y ${o.units} ${o.noun}.`,
+types:{stop:['Stop motion','muñecos y objetos, foto a foto'],trad:['Tradicional','dibujo en papel'],tradi:['Tradigital','digital, cuadro a cuadro'],'3d':['3D','poses en el ordenador']},
+noun:{draw:['dibujo','dibujos'],pose:['pose','poses']},
+rProj:'El proyecto vale',rGoal:'Necesitas animar',
+fFrames:'fotogramas en total',fUnits:p=>p+' por hacer',fPer:s=>'por '+s,fTime:'timecode',fSec:'de animación',fTotal:'cobras',
+perDay:(t,u,n,m)=>`<b>Por día:</b> ${t} de animación, ${u} ${n} y ${m} de pago.`,
+strip:n=>`Un segundo en pantalla: cada cuadrado es un fotograma; los rellenos son ${n} nuevos.`,
+sumProj:o=>`Animando ${o.dur} a ${o.fps} fps, ${o.exp}, son ${o.frames} fotogramas y ${o.units} ${o.noun}. Cobrando ${o.rate} por segundo, el proyecto vale ${o.total} (${o.per} por ${o.sing}).`,
+sumGoal:o=>`Para ganar ${o.goal} cobrando ${o.rate} por segundo, necesitas animar ${o.dur}: ${o.frames} fotogramas y ${o.units} ${o.noun} a ${o.fps} fps, ${o.exp}.`,
+copy:'Copiar resumen',copied:'¡Copiado!',copyFail:'Selecciona el texto y cópialo',
+sample:'Valores de ejemplo: cámbialos por los de tu proyecto.',
+cmpTitle:'Los cuatro fps lado a lado',cmpLede:'Misma duración, mismo pago por segundo y mismo “cada”. Lo que cambia es cuánto dibujas.',
+th:(p,s)=>['fps','Fotogramas',p,'Valor por '+s,p+' por día'],
+howTitle:'Cómo se hace la cuenta',
+how:[['Fotogramas','Segundos × fps. Diez segundos a 24 fps son 240 fotogramas.'],['Dibujos','Fotogramas ÷ “cada”. En dos, esos 240 fotogramas son 120 dibujos.'],['Pago','Segundos × pago por segundo. El valor por dibujo muestra lo que rinde cada uno.']],
+footer:'Hecho por Coffee Cat Studio, para animadores.',bmcTitle:'La calculadora es gratuita.',bmcLede:'Si te ayudó, un café ayuda a Coffee Cat a crear más herramientas para animadores.',bmc:'Invítame un café',presetMin:'min'}};
+
+const TYPES=[
+{id:'stop',fps:24,exp:2,noun:'pose',icon:'<circle cx="20" cy="10" r="5" fill="#94a3b8"/><path d="M14 18h12l-2 10h-8z" fill="#2563eb"/><path d="M16 28l-3 8M24 28l3 8M14 19l-6 6M26 19l6 6" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>'},
+{id:'trad',fps:24,exp:2,noun:'draw',icon:'<rect x="7" y="6" width="22" height="28" rx="2" fill="#fff" stroke="#94a3b8" stroke-width="2"/><circle cx="12" cy="10" r="1.5" fill="#94a3b8"/><circle cx="24" cy="10" r="1.5" fill="#94a3b8"/><path d="M12 26c3-8 8-8 11 0" stroke="#2563eb" stroke-width="2" fill="none"/><path d="M27 30l8-14 3 2-8 14z" fill="#2563eb"/>'},
+{id:'tradi',fps:24,exp:2,noun:'draw',icon:'<rect x="4" y="8" width="30" height="22" rx="3" fill="#475569"/><rect x="7" y="11" width="24" height="16" rx="1" fill="#fff"/><path d="M11 23c3-7 8-7 11 0" stroke="#2563eb" stroke-width="2" fill="none"/><path d="M28 32l8-12 2 2-8 12z" fill="#94a3b8"/>'},
+{id:'3d',fps:24,exp:1,noun:'pose',icon:'<path d="M20 5l13 7v15l-13 7-13-7V12z" fill="#2563eb"/><path d="M20 5l13 7-13 7-13-7z" fill="#6ea0ff"/><path d="M20 19v15l-13-7V12z" fill="#94a3b8"/>'}];
+const FPS=[8,12,24,30],EXP=[1,2,3];
+const $=id=>document.getElementById(id);
+const def={lang:null,mode:'proj',type:'tradi',fps:24,exp:2,min:'0',sec:'10',goal:'3000',rate:'300',cur:null,days:'',pay:'sec',daily:'500',spd:''};
+let S={...def};
+try{Object.assign(S,JSON.parse(localStorage.getItem('cc-anim-calc')||'{}'))}catch(e){}
+{const hl=(location.hash||'').slice(1);if(T[hl])S.lang=hl}
+if(!S.lang){const n=(navigator.language||'pt').slice(0,2);S.lang=T[n]?n:'pt'}
+if(!S.cur)S.cur=S.lang==='pt'?'BRL':S.lang==='es'?'EUR':'USD';
+const save=()=>{try{localStorage.setItem('cc-anim-calc',JSON.stringify(S))}catch(e){}};
+const num=v=>{const x=parseFloat(String(v).replace(/\s/g,'').replace(',','.'));return isFinite(x)&&x>0?x:0};
+const L=()=>T[S.lang];
+const nf=(x,d=0)=>new Intl.NumberFormat(L().loc,{maximumFractionDigits:d}).format(x);
+const money=x=>new Intl.NumberFormat(L().loc,{style:'currency',currency:S.cur}).format(x||0);
+const sym=()=>new Intl.NumberFormat(L().loc,{style:'currency',currency:S.cur,currencyDisplay:'narrowSymbol'}).formatToParts(0).find(p=>p.type==='currency').value;
+const dur=s=>{if(s<60)return nf(s,2)+' '+L().sec;const m=Math.floor(s/60),r=+(s-m*60).toFixed(2);return nf(m)+' '+L().min+(r?' '+nf(r,2)+' '+L().sec:'')};
+const tc=(s,fps)=>{const f=Math.round(s*fps),ff=f%fps,ts=Math.floor(f/fps),p=n=>String(n).padStart(2,'0');return p(Math.floor(ts/60))+':'+p(ts%60)+':'+p(ff)};
+
+function calc(fps=S.fps){
+  const daily=num(S.daily);let rate=num(S.rate),days=Math.floor(num(S.days)),secs,total;
+  if(S.pay==='sec'){secs=S.mode==='proj'?num(S.min)*60+num(S.sec):(rate?num(S.goal)/rate:0);total=secs*rate}
+  else if(S.mode==='proj'){secs=num(S.min)*60+num(S.sec);total=daily*days;rate=secs&&days?total/secs:0}
+  else{days=daily?Math.ceil(num(S.goal)/daily-1e-9):0;total=days*daily;secs=days*num(S.spd);rate=secs?total/secs:0}
+  const frames=Math.ceil(secs*fps-1e-9),units=Math.ceil(frames/S.exp-1e-9);
+  const per=rate/(fps/S.exp);
+  return{secs,frames,units,total,per,rate,days,fps,daily};
+}
+function staticText(){
+  document.documentElement.lang=L().loc;
+  document.querySelectorAll('[data-t]').forEach(e=>{const v=L()[e.dataset.t];if(typeof v==='string')e.textContent=v});
+  document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===S.lang));
+  $('types').innerHTML=TYPES.map(t=>`<button class="tcard" data-type="${t.id}" aria-pressed="${S.type===t.id}"><svg viewBox="0 0 40 40" aria-hidden="true">${t.icon}</svg><span><b>${L().types[t.id][0]}</b><small>${L().types[t.id][1]}</small></span></button>`).join('');
+  $('fps').innerHTML=FPS.map(f=>`<button class="chip" data-fps="${f}" aria-pressed="${S.fps===f}">${f} fps</button>`).join('');
+  $('exp').innerHTML=EXP.map(n=>`<button class="chip" data-exp="${n}" aria-pressed="${S.exp===n}">${L().expo(n)}</button>`).join('');
+  $('presets').innerHTML=[5,10,30,60,120].map(s=>`<button data-preset="${s}">${s<60?s+' '+L().sec:s/60+' '+L().presetMin}</button>`).join('');
+  $('how').innerHTML=L().how.map(h=>`<li><b>${h[0]}</b>${h[1]}</li>`).join('');
+}
+function render(){
+  const l=L(),r=calc(),ty=TYPES.find(t=>t.id===S.type),[sing,plur]=l.noun[ty.noun];
+  ['min','sec','goal','rate','days','daily','spd'].forEach(k=>{if(document.activeElement!==$(k))$(k).value=S[k]});
+  const day=S.pay==='day';
+  $('pay').innerHTML=['sec','day'].map((p,i)=>`<button class="chip" data-pay="${p}" aria-pressed="${S.pay===p}">${l.pay[i]}</button>`).join('');
+  $('rateF').hidden=day;$('dailyF').hidden=!day;$('payHint').textContent=day?l.payHintDay:l.payHintSec;
+  const dg=day&&S.mode==='goal';
+  $('daysF').hidden=dg;$('spdF').hidden=!dg;
+  $('s6l').textContent=!day?l.s6sec:dg?l.s6dayGoal:l.s6dayProj;
+  $('s6h').textContent=!day?l.s6hSec:dg?l.s6hDayGoal:l.s6hDayProj;
+  $('daysW').textContent=day?l.daysWDay:l.daysWSec;
+  $('dayPresets').innerHTML=dg?[1,2,3,5].map(v=>`<button data-spd="${v}">${v} ${l.sec}</button>`).join(''):[5,10,20,22].map(v=>`<button data-days="${v}">${v} ${l.daysShort}</button>`).join('');
+  if(document.activeElement!==$('expc'))$('expc').value=S.exp;
+  $('cur').value=S.cur;
+  document.querySelectorAll('.cs').forEach(e=>e.textContent=sym());
+  $('mProj').setAttribute('aria-pressed',S.mode==='proj');$('mGoal').setAttribute('aria-pressed',S.mode==='goal');
+  $('durBox').hidden=S.mode!=='proj';$('goalBox').hidden=S.mode!=='goal';
+  $('rLabel').textContent=S.mode==='proj'?l.rProj:day?l.rGoalDay:l.rGoal;
+  const big=$('rBig');big.textContent=S.mode==='proj'?money(r.total):day?l.bigDays(r.days,nf(r.days)):dur(r.secs);
+  big.classList.remove('flash');void big.offsetWidth;big.classList.add('flash');
+  const D='—',figs=!day?[[nf(r.units),l.fUnits(plur),'hl'],[nf(r.frames),l.fFrames],
+    S.mode==='proj'?[money(r.per),l.fPer(sing)]:[money(r.total),l.fTotal],
+    S.mode==='proj'?[tc(r.secs,r.fps),l.fTime]:[money(r.per),l.fPer(sing)]]
+   :S.mode==='proj'?[[nf(r.units),l.fUnits(plur),'hl'],[nf(r.frames),l.fFrames],[r.days?nf(r.days):D,l.fDays],[r.rate?money(r.rate):D,l.eqSec]]
+   :[[money(r.total),l.fTotal,'hl'],[r.secs?dur(r.secs):D,l.fSec],[r.secs?nf(r.units):D,l.fUnits(plur)],[r.secs?money(r.per):D,l.fPer(sing)]];
+  $('figs').innerHTML=figs.map(f=>`<div class="${f[2]||''}"><b>${f[0]}</b><small>${f[1]}</small></div>`).join('');
+  $('day').innerHTML=r.days&&r.secs?l.perDay(dur(r.secs/r.days),nf(Math.ceil(r.units/r.days)),plur,money(day?r.daily:r.total/r.days)):'';
+  $('cap').textContent=l.strip(plur);
+  const o={dur:dur(r.secs),fps:r.fps,exp:l.expShort(S.exp),frames:nf(r.frames),units:nf(r.units),noun:plur,sing,rate:money(r.rate),total:money(r.total),per:money(r.per),goal:money(num(S.goal)),days:nf(r.days),daily:money(r.daily),uday:r.days?nf(Math.ceil(r.units/r.days)):'0',spd:dur(num(S.spd))};
+  $('sum').textContent=!day?(S.mode==='proj'?l.sumProj(o):l.sumGoal(o)):S.mode==='proj'?(r.days?l.sumDayProj(o):l.sumDayProjNo(o)):l.sumDayGoal(o)+(r.secs?l.sumDayGoalSpd(o):'');
+  const th=l.th(plur[0].toUpperCase()+plur.slice(1),sing);
+  $('cmpHead').innerHTML=th.map(h=>`<th>${h}</th>`).join('');
+  $('cmpBody').innerHTML=FPS.map(f=>{const c=calc(f);return`<tr class="${f===S.fps?'on':''}"><td>${f} fps</td><td>${nf(c.frames)}</td><td>${nf(c.units)}</td><td>${money(c.per)}</td><td>${c.days&&c.secs?nf(Math.ceil(c.units/c.days)):'—'}</td></tr>`}).join('');
+  drawStrip();save();
+}
+const sv=$('strip');
+function drawStrip(){
+  const W=sv.clientWidth,H=sv.clientHeight;if(!W)return;
+  const n=S.fps,g=W<520?2:3,cw=(W-g*(n-1))/n,top=18,ch=H-36;
+  let h='';
+  for(let x=6;x<W;x+=14)h+=`<rect x="${x}" y="3" width="7" height="8" rx="2" fill="rgba(255,255,255,.18)"/><rect x="${x}" y="${H-11}" width="7" height="8" rx="2" fill="rgba(255,255,255,.18)"/>`;
+  for(let i=0;i<n;i++){const x=i*(cw+g),on=i%S.exp===0;
+    h+=on?`<rect x="${x}" y="${top}" width="${cw}" height="${ch}" rx="${Math.min(4,cw/4)}" fill="#ffffff"/>`
+         :`<rect x="${x+.75}" y="${top+.75}" width="${cw-1.5}" height="${ch-1.5}" rx="${Math.min(4,cw/4)}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/>`;
+    if(on&&cw>=16)h+=`<text x="${x+cw/2}" y="${top+ch/2+5}" text-anchor="middle" font-size="${cw>24?13:10}" font-weight="800" fill="#1d4fd8" font-family="Nunito,sans-serif">${i/S.exp+1}</text>`;}
+  sv.innerHTML=h;sv.setAttribute('aria-label',L().strip(L().noun[TYPES.find(t=>t.id===S.type).noun][1]));
+}
+const ro=new ResizeObserver(drawStrip);ro.observe(sv);
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.lang){S.lang=d.lang;staticText();render()}
+  else if(d.mode){S.mode=d.mode;render()}
+  else if(d.pay){S.pay=d.pay;render()}
+  else if(d.days){S.days=d.days;render()}
+  else if(d.spd){S.spd=d.spd;render()}
+  else if(d.type){const t=TYPES.find(x=>x.id===d.type);S.type=t.id;S.fps=t.fps;S.exp=t.exp;staticText();render()}
+  else if(d.fps){S.fps=+d.fps;staticText();render()}
+  else if(d.exp){S.exp=+d.exp;staticText();render()}
+  else if(d.preset){const s=+d.preset;S.min=String(Math.floor(s/60));S.sec=String(s%60);render()}
+  else if(d.step==='expc'){S.exp=Math.max(1,Math.min(99,S.exp+ +d.d));staticText();render()}
+  else if(d.step){S[d.step]=String(Math.max(0,+(num(S[d.step])+ +d.d).toFixed(2)));render()}
+  else if(b.id==='copy'){const t=$('sum').textContent;
+    const done=m=>{b.textContent=m;setTimeout(()=>b.textContent=L().copy,1600)};
+    try{navigator.clipboard.writeText(t).then(()=>done(L().copied),()=>done(L().copyFail))}catch(err){done(L().copyFail)}}
+});
+['min','sec','goal','rate','days','daily','spd'].forEach(k=>$(k).addEventListener('input',e=>{S[k]=e.target.value;render()}));
+$('expc').addEventListener('input',e=>{const v=Math.floor(num(e.target.value));if(v>=1){S.exp=Math.min(99,v);staticText();render()}});
+$('expc').addEventListener('blur',()=>render());
+$('cur').addEventListener('change',e=>{S.cur=e.target.value;render()});
+staticText();render();
+}
+</script>
+<script>if("serviceWorker" in navigator){addEventListener("load",()=>{try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}})}</script>
+</body>
+</html>
